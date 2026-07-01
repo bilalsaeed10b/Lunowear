@@ -32,9 +32,10 @@
   };
   window.LUNA.I = I;
 
-  /* ---------- Luno wordmark: the O is a crescent moon ---------- */
-  const MOON_O = "<svg class='logo__moon' viewBox='0 0 100 100' aria-hidden='true'><defs><mask id='luno-moon'><rect width='100' height='100' fill='#fff'/><circle cx='63' cy='39' r='30' fill='#000'/></mask></defs><circle cx='50' cy='50' r='37' fill='currentColor' mask='url(#luno-moon)'/></svg>";
-  function logoHTML() { return `<span class="logo__word">LUN${MOON_O}</span>`; }
+  /* ---------- Luno wordmark: the O is a round 3D rotating moon ---------- */
+  function logoHTML() {
+    return `<span class="logo__word">LUN<span class="moon moon--o" aria-hidden="true"></span></span>`;
+  }
   window.LUNA.logoHTML = logoHTML;
 
   /* ---------- Header markup ---------- */

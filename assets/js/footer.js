@@ -18,6 +18,7 @@
             <a href="#" aria-label="TikTok">${I.tt}</a>
             <a href="#" aria-label="YouTube">${I.yt}</a>
           </div>
+          <div class="footer__moon"><span class="moon" aria-hidden="true"></span></div>
         </div>
         <div class="footer__col">
           <h5>Shop</h5>

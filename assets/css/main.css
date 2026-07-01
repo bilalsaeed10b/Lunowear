@@ -118,7 +118,7 @@ ul { list-style: none; padding: 0; }
   align-items: center;
 }
 .logo__word { display: inline-flex; align-items: center; letter-spacing: 0.03em; }
-.logo__moon { width: 0.74em; height: 0.74em; margin-left: 0.02em; }
+.logo__word .moon--o { width: 0.8em; height: 0.8em; margin-left: 0.05em; vertical-align: middle; }
 
 /* Nav */
 .nav { display: flex; gap: 2.25rem; }
@@ -651,3 +651,80 @@ ul { list-style: none; padding: 0; }
 @media (max-width: 620px) {
   .fcard .prod__wish { opacity: 1; transform: none; }
 }
+
+/* ============================================================
+   3D rotating moon (logo "O" + loader) and the loading screen
+   ============================================================ */
+.moon {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+  vertical-align: middle;
+  background: radial-gradient(circle at 32% 30%, #f5f2ea 0%, #e6e1d4 40%, #cbc3b2 72%, #a9a08c 100%);
+  box-shadow:
+    inset -0.16em -0.16em 0.3em rgba(60, 52, 34, 0.5),
+    inset 0.05em 0.05em 0.14em rgba(255, 255, 255, 0.55),
+    0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+/* Scrolling crater surface -> continuous axial spin (GPU transform) */
+.moon::before {
+  content: '';
+  position: absolute; top: 0; left: 0; height: 100%; width: 200%;
+  background-image:
+    radial-gradient(circle at 12% 42%, rgba(120, 108, 86, 0.55) 0 6%, transparent 7%),
+    radial-gradient(circle at 30% 22%, rgba(120, 108, 86, 0.40) 0 3.5%, transparent 4.5%),
+    radial-gradient(circle at 38% 66%, rgba(120, 108, 86, 0.50) 0 5%, transparent 6%),
+    radial-gradient(circle at 46% 38%, rgba(120, 108, 86, 0.32) 0 2.5%, transparent 3.5%),
+    radial-gradient(circle at 22% 82%, rgba(120, 108, 86, 0.35) 0 3%, transparent 4%);
+  background-size: 50% 100%;
+  background-repeat: repeat-x;
+  animation: moonroll 9s linear infinite;
+}
+/* Fixed spherical shading on top (the 3D read) */
+.moon::after {
+  content: '';
+  position: absolute; inset: 0; border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.45), transparent 42%),
+    radial-gradient(circle at 76% 80%, rgba(38, 30, 16, 0.50), transparent 55%);
+  pointer-events: none;
+}
+@keyframes moonroll { to { transform: translateX(-50%); } }
+
+/* ---------- Loading screen ---------- */
+.loader {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #ffffff;
+  display: grid; place-items: center;
+  transition: opacity 0.5s var(--ease), visibility 0.5s var(--ease);
+}
+.loader.is-done { opacity: 0; visibility: hidden; }
+.loader__logo {
+  display: inline-flex; align-items: center;
+  font-family: var(--font-logo); font-weight: 600; color: var(--ink);
+  font-size: clamp(2.6rem, 10vw, 5.5rem); letter-spacing: 0.04em;
+}
+/* Hidden until the display font is ready (prevents a fallback-font flash) */
+.loader__lun { animation: loaderLun 1.7s var(--ease) both; }
+.loader__moon { width: 0.82em; height: 0.82em; margin-left: 0.05em; animation: loaderMoon 1.7s var(--ease) both; }
+/* LUN starts left-of-centre and slides in toward the O */
+@keyframes loaderLun {
+  0%   { opacity: 0; transform: translateX(-1em); }
+  35%  { opacity: 1; transform: translateX(-1em); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+/* Moon starts right-of-centre and rolls (rotates) in toward LUN */
+@keyframes loaderMoon {
+  0%   { opacity: 0; transform: translateX(1em) rotate(360deg); }
+  35%  { opacity: 1; transform: translateX(1em) rotate(360deg); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .moon::before { animation: none; }
+  .loader__lun, .loader__moon { animation-duration: 0.4s; }
+}
+
+/* Decorative brand moon in the footer */
+.footer__moon { margin-top: 1.6rem; }
+.footer__moon .moon { width: 64px; height: 64px; }
