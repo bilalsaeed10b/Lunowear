@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luna — Modern Apparel</title>
+  <meta name="description" content="Luna — modern essentials and seasonal apparel for men, women and juniors." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body data-overlay-header="true">
+  <div data-slot="header"></div>
+
+  <main>
+    <!-- Hero slider -->
+    <section class="hero" aria-label="Featured">
+      <div class="hero__slides">
+        <div class="hero__slide is-active">
+          <img class="hero__img" src="https://picsum.photos/seed/luna-hero1/1920/1200" alt="" />
+          <div class="hero__content">
+            <div>
+              <p class="eyebrow hero__eyebrow">New Season 2026</p>
+              <h1 class="hero__title">Second Outfit</h1>
+              <a class="btn btn--light hero__cta" href="collection.html?c=all&dept=men">Shop Men</a>
+            </div>
+          </div>
+        </div>
+        <div class="hero__slide">
+          <img class="hero__img" src="https://picsum.photos/seed/luna-hero2/1920/1200" alt="" />
+          <div class="hero__content">
+            <div>
+              <p class="eyebrow hero__eyebrow">Effortless Everyday</p>
+              <h1 class="hero__title">The Edit</h1>
+              <a class="btn btn--light hero__cta" href="collection.html?c=all&dept=women">Shop Women</a>
+            </div>
+          </div>
+        </div>
+        <div class="hero__slide">
+          <img class="hero__img" src="https://picsum.photos/seed/luna-hero3/1920/1200" alt="" />
+          <div class="hero__content">
+            <div>
+              <p class="eyebrow hero__eyebrow">Up to 40% Off</p>
+              <h1 class="hero__title">Season Sale</h1>
+              <a class="btn btn--light hero__cta" href="collection.html?c=all&sale=1">Shop Sale</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero__dots">
+        <button class="hero__dot is-active" aria-label="Slide 1"></button>
+        <button class="hero__dot" aria-label="Slide 2"></button>
+        <button class="hero__dot" aria-label="Slide 3"></button>
+      </div>
+    </section>
+
+    <!-- Marquee strip -->
+    <div class="strip" aria-hidden="true">
+      <div class="strip__track">
+        <span class="strip__item">New Arrivals</span><span class="strip__item">Free Shipping Over PKR 3,500</span>
+        <span class="strip__item">14-Day Returns</span><span class="strip__item">Season Sale</span>
+        <span class="strip__item">New Arrivals</span><span class="strip__item">Free Shipping Over PKR 3,500</span>
+        <span class="strip__item">14-Day Returns</span><span class="strip__item">Season Sale</span>
+      </div>
+    </div>
+
+    <!-- Category tiles -->
+    <section class="section container">
+      <div class="sec-head">
+        <h2 class="sec-title">Shop by Category</h2>
+        <a class="sec-link" href="collection.html?c=all&dept=men">View All</a>
+      </div>
+      <div class="cat-grid">
+        <a class="cat-tile" href="collection.html?c=tshirts&dept=men">
+          <img src="https://picsum.photos/seed/luna-cat-tees/900/1200" alt="Tees & Polos" />
+          <span class="cat-tile__label"><span>Tees &amp; Polos</span><span>→</span></span>
+        </a>
+        <a class="cat-tile" href="collection.html?c=shirts&dept=men">
+          <img src="https://picsum.photos/seed/luna-cat-shirts/900/1200" alt="Shirts" />
+          <span class="cat-tile__label"><span>Shirts</span><span>→</span></span>
+        </a>
+        <a class="cat-tile" href="collection.html?c=jeans&dept=men">
+          <img src="https://picsum.photos/seed/luna-cat-denim/900/1200" alt="Denim" />
+          <span class="cat-tile__label"><span>Denim</span><span>→</span></span>
+        </a>
+        <a class="cat-tile" href="collection.html?c=activewear&dept=men">
+          <img src="https://picsum.photos/seed/luna-cat-active/900/1200" alt="Activewear" />
+          <span class="cat-tile__label"><span>Activewear</span><span>→</span></span>
+        </a>
+        <a class="cat-tile" href="collection.html?c=footwear&dept=men">
+          <img src="https://picsum.photos/seed/luna-cat-shoes/900/1200" alt="Footwear" />
+          <span class="cat-tile__label"><span>Footwear</span><span>→</span></span>
+        </a>
+        <a class="cat-tile" href="collection.html?c=accessories&dept=men">
+          <img src="https://picsum.photos/seed/luna-cat-acc/900/1200" alt="Accessories" />
+          <span class="cat-tile__label"><span>Accessories</span><span>→</span></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- New arrivals -->
+    <section class="section container" style="padding-top:0">
+      <div class="sec-head">
+        <h2 class="sec-title">New Arrivals</h2>
+        <div class="carousel__nav" data-carousel>
+          <button class="cbtn" data-scroll="prev" aria-label="Previous"></button>
+          <button class="cbtn" data-scroll="next" aria-label="Next"></button>
+        </div>
+      </div>
+      <div class="carousel" data-carousel>
+        <div class="carousel__track" data-new-arrivals></div>
+      </div>
+    </section>
+
+    <!-- Categories in focus (split) -->
+    <section class="section" style="background:var(--bg-muted)">
+      <div class="container">
+        <div class="focus">
+          <a class="focus__left" href="collection.html?c=polos&dept=men">
+            <img src="https://picsum.photos/seed/luna-focus/900/1200" alt="Categories in focus" />
+          </a>
+          <div class="focus__right">
+            <h2 class="sec-title">Categories in Focus</h2>
+            <div class="focus__tabs">
+              <button class="focus__tab is-active" data-cat="polos">Tees &amp; Polos</button>
+              <button class="focus__tab" data-cat="shorts">Shorts</button>
+              <button class="focus__tab" data-cat="shirts">Shirts</button>
+            </div>
+            <div class="carousel" data-carousel>
+              <div class="carousel__track" data-focus-track></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lookbook banner -->
+    <section class="lookbook">
+      <img src="https://picsum.photos/seed/luna-lookbook/1920/1000" alt="" />
+      <div class="lookbook__content">
+        <p class="eyebrow" style="color:rgba(255,255,255,.85)">The Luna Lookbook</p>
+        <h2 class="lookbook__title">Made for the Modern Day</h2>
+        <p class="lookbook__text">Considered essentials in a refined, monochrome palette — designed to layer, built to last.</p>
+        <a class="btn btn--light btn--lg" href="collection.html?c=all&dept=men">Explore the Collection</a>
+      </div>
+    </section>
+
+    <!-- Best sellers -->
+    <section class="section container">
+      <div class="sec-head">
+        <h2 class="sec-title">Best Sellers</h2>
+        <a class="sec-link" href="collection.html?c=all&sale=1">Shop Sale</a>
+      </div>
+      <div class="grid-products" data-best-sellers></div>
+    </section>
+
+    <!-- Feature row -->
+    <section class="container">
+      <div class="features">
+        <div class="feature" data-feature="truck"><span data-ico></span><div><h4>Fast Delivery</h4><p>Nationwide, 2–4 days</p></div></div>
+        <div class="feature" data-feature="refresh"><span data-ico></span><div><h4>Easy Returns</h4><p>14-day returns</p></div></div>
+        <div class="feature" data-feature="shield"><span data-ico></span><div><h4>Secure Checkout</h4><p>Protected payments</p></div></div>
+        <div class="feature" data-feature="support"><span data-ico></span><div><h4>Here to Help</h4><p>Support 7 days a week</p></div></div>
+      </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter section">
+      <div class="container newsletter__inner">
+        <div>
+          <h2>Join the Luna List</h2>
+          <p>Be first to shop new drops, private sales and members-only offers.</p>
+        </div>
+        <form class="news-form" onsubmit="LUNA.toast('Thanks for subscribing');return false;">
+          <input type="email" placeholder="Enter your email" required aria-label="Email" />
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <div data-slot="footer"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/footer.js"></script>
+  <script src="assets/js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account — Luna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+  <div data-slot="header"></div>
+
+  <main class="container section" style="max-width:460px">
+    <h1 class="sec-title" style="text-align:center;margin-bottom:.5rem">Sign In</h1>
+    <p style="text-align:center;color:var(--ink-2);margin-bottom:2rem">Welcome back to Luna.</p>
+    <form onsubmit="LUNA.toast('Demo only — no real account');return false;" style="display:flex;flex-direction:column;gap:1rem">
+      <div>
+        <label class="pdp__label">Email</label>
+        <input type="email" required placeholder="you@example.com" style="width:100%;border:1px solid var(--line-2);padding:1rem;font:inherit" />
+      </div>
+      <div>
+        <label class="pdp__label">Password</label>
+        <input type="password" required placeholder="••••••••" style="width:100%;border:1px solid var(--line-2);padding:1rem;font:inherit" />
+      </div>
+      <button class="btn btn--block btn--lg" type="submit">Sign In</button>
+    </form>
+    <p style="text-align:center;color:var(--ink-2);margin-top:1.4rem;font-size:var(--fs-sm)">
+      New here? <a href="#" style="border-bottom:1px solid var(--ink);color:var(--ink)">Create an account</a>
+    </p>
+  </main>
+
+  <div data-slot="footer"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/footer.js"></script>
+</body>
+</html>
