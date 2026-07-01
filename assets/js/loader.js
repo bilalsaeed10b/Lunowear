@@ -29,5 +29,25 @@
     setTimeout(remove, 600);
   }
 
-  setTimeout(done, HOLD);
+  function startLoader() {
+    if (el.classList.contains('fonts-loaded')) return;
+    el.classList.add('fonts-loaded');
+    setTimeout(done, HOLD);
+  }
+
+  // Fallback timeout to ensure loader proceeds even on very slow connections
+  var fontTimeout = setTimeout(startLoader, 800);
+
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load('600 1em Fraunces').then(function () {
+      clearTimeout(fontTimeout);
+      startLoader();
+    }).catch(function () {
+      clearTimeout(fontTimeout);
+      startLoader();
+    });
+  } else {
+    clearTimeout(fontTimeout);
+    startLoader();
+  }
 })();
