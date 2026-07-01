@@ -58,6 +58,10 @@
     ['Structured Baseball Cap', 'accessories', 'One Size', 'MEN', 1290, null, ['navy', 'stone', 'black'], SIZES_ONE, null],
   ];
 
+  // A few "sold out" items for the feature grids (indices chosen to
+  // surface in the New In / Best Sellers rows).
+  const SOLD_OUT = new Set([4, 9, 11, 18]);
+
   const products = RAW.map((r, i) => {
     const [name, category, fit, dept, price, compareAt, colorKeys, sizes, badge] = r;
     const id = `f${2000 + i}`;
@@ -74,6 +78,7 @@
       colors: colorKeys.map((k) => COLORS[k]),
       sizes,
       badge,
+      soldOut: SOLD_OUT.has(i),
       images: [img(`${id}a`), img(`${id}b`), img(`${id}c`), img(`${id}d`)],
     };
   });

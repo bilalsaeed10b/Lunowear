@@ -71,7 +71,7 @@
     const label = currentLabel();
     if (els.title) els.title.textContent = label.toUpperCase();
     if (els.crumb) els.crumb.textContent = label.toUpperCase();
-    document.title = `${label} — Luna`;
+    document.title = `${label} — Luno`;
   }
 
   function syncURL() {

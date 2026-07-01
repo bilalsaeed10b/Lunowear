@@ -1,6 +1,7 @@
 /* ============================================================
-   Luna — Shared UI: icons, header, drawers, product card, toast
+   Luno — Shared UI: icons, logo, header, drawers, product cards, toast
    Injected into every page via <script>. Reads window.LUNA.
+   (Internal namespace stays window.LUNA for stability.)
    ============================================================ */
 (function () {
   const { Store, formatPrice, getProduct } = window.LUNA;
@@ -31,36 +32,34 @@
   };
   window.LUNA.I = I;
 
+  /* ---------- Luno wordmark: the O is a crescent moon ---------- */
+  const MOON_O = "<svg class='logo__moon' viewBox='0 0 100 100' aria-hidden='true'><defs><mask id='luno-moon'><rect width='100' height='100' fill='#fff'/><circle cx='63' cy='39' r='30' fill='#000'/></mask></defs><circle cx='50' cy='50' r='37' fill='currentColor' mask='url(#luno-moon)'/></svg>";
+  function logoHTML() { return `<span class="logo__word">LUN${MOON_O}</span>`; }
+  window.LUNA.logoHTML = logoHTML;
+
   /* ---------- Header markup ---------- */
   function headerHTML(overlay) {
+    const msgs = ['Free shipping on orders over PKR 3,500', 'New season — up to 40% off', 'Easy 14-day returns', 'New drops every week'];
+    const ticker = msgs.concat(msgs).map((m) => `<span class="topbar__msg">${m}</span>`).join('');
     return `
-    <div class="topbar">
-      <div class="topbar__track">
-        <span class="topbar__msg">Free shipping on orders over PKR 3,500</span>
-        <span class="topbar__msg">New season — up to 40% off</span>
-        <span class="topbar__msg">Easy 14-day returns</span>
-      </div>
-    </div>
+    <div class="topbar"><div class="topbar__track">${ticker}</div></div>
     <header class="header ${overlay ? 'header--overlay' : ''}" id="site-header">
       <div class="container header__inner">
         <div class="header__left">
           <button class="hamburger" data-open="mmenu" aria-label="Menu">${I.menu}</button>
           <nav class="nav">
             <a class="nav__link" href="collection.html?c=all&dept=men">Men</a>
-            <a class="nav__link" href="collection.html?c=all&dept=women">Women</a>
-            <a class="nav__link" href="collection.html?c=all&dept=juniors">Juniors</a>
+            <a class="nav__link" href="coming-soon.html?dept=women">Women</a>
+            <a class="nav__link" href="coming-soon.html?dept=juniors">Juniors</a>
           </nav>
         </div>
-        <a class="logo" href="index.html" aria-label="Luna home">
-          <svg class="logo__moon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 2A10 10 0 1 0 22 14.5 8 8 0 0 1 15.5 2z"/></svg>
-          <b>LUNA</b>
-        </a>
+        <a class="logo" href="index.html" aria-label="Luno home">${logoHTML()}</a>
         <div class="header__right">
           <form class="search" role="search" onsubmit="return LUNA.doSearch(event)">
             <span class="search__icon">${I.search}</span>
             <input type="search" name="q" placeholder="Search" aria-label="Search products" />
           </form>
-          <button class="iconbtn" data-open="search-mobile" aria-label="Search">${I.search}</button>
+          <button class="iconbtn iconbtn--mobile-search" data-open="search-mobile" aria-label="Search">${I.search}</button>
           <a class="iconbtn" href="account.html" aria-label="Account">${I.user}</a>
           <button class="iconbtn" data-open="wishlist" aria-label="Wishlist">
             ${I.heart.replace('<svg', '<svg fill="none" stroke="currentColor" stroke-width="1.6"')}
@@ -92,19 +91,20 @@
     </aside>
 
     <nav class="mmenu" data-drawer="mmenu" aria-label="Menu">
-      <div class="mmenu__head"><span class="logo"><b>LUNA</b></span><button class="iconbtn" data-close aria-label="Close">${I.close}</button></div>
+      <div class="mmenu__head">${logoHTML()}<button class="iconbtn" data-close aria-label="Close">${I.close}</button></div>
       <div class="mmenu__body">
         <a class="mmenu__link" href="collection.html?c=all&dept=men">Men ${I.chevR}</a>
-        <a class="mmenu__link" href="collection.html?c=all&dept=women">Women ${I.chevR}</a>
-        <a class="mmenu__link" href="collection.html?c=all&dept=juniors">Juniors ${I.chevR}</a>
+        <a class="mmenu__link" href="coming-soon.html?dept=women">Women <span class="soon-tag">Soon</span></a>
+        <a class="mmenu__link" href="coming-soon.html?dept=juniors">Juniors <span class="soon-tag">Soon</span></a>
         <a class="mmenu__link" href="collection.html?c=all&sale=1">Sale ${I.chevR}</a>
+        <a class="mmenu__link" href="collection.html?c=footwear&dept=men">Footwear ${I.chevR}</a>
       </div>
     </nav>
 
     <div class="toast" data-toast></div>`;
   }
 
-  /* ---------- Product card template ---------- */
+  /* ---------- Standard product card (collection / related) ---------- */
   function productCardHTML(p) {
     const badge = p.badge === 'sale'
       ? `<span class="prod__badge prod__badge--sale">-${p.discount}%</span>`
@@ -131,9 +131,36 @@
   }
   window.LUNA.productCardHTML = productCardHTML;
 
+  /* ---------- Feature (FEAR-style) card — big card, dots, sold-out
+       Kept in the LIGHT theme (grey card, existing images). ---------- */
+  function fearCardHTML(p) {
+    const dots = p.images.slice(0, 4).map((_, i) => `<span class="fdot ${i === 0 ? 'is-active' : ''}"></span>`).join('');
+    const sold = p.soldOut ? `<span class="fcard__sold">Sold Out</span>` : '';
+    const priceHTML = p.compareAt
+      ? `<b>${formatPrice(p.price)}</b><del>${formatPrice(p.compareAt)}</del>`
+      : `<b>${formatPrice(p.price)}</b>`;
+    const wished = Store.isWished(p.id) ? 'is-active' : '';
+    return `
+    <article class="fcard ${p.soldOut ? 'is-sold' : ''}" data-id="${p.id}">
+      <a class="fcard__media" href="product.html?id=${p.id}">
+        ${sold}
+        <img class="fcard__img" src="${p.images[0]}" alt="${p.name}" loading="lazy" />
+        <img class="fcard__img fcard__img--hover" src="${p.images[1]}" alt="" loading="lazy" />
+        <button class="prod__wish ${wished}" data-wish="${p.id}" aria-label="Add to wishlist" onclick="event.preventDefault();LUNA.onWish(this,'${p.id}')">${I.heart}</button>
+        <div class="fcard__dots">${dots}</div>
+      </a>
+      <div class="fcard__info">
+        <a class="fcard__name" href="product.html?id=${p.id}">${p.name}</a>
+        <div class="fcard__price">${priceHTML}</div>
+      </div>
+    </article>`;
+  }
+  window.LUNA.fearCardHTML = fearCardHTML;
+
   /* ---------- Mount shared chrome ---------- */
   function mount() {
     const overlay = document.body.dataset.overlayHeader === 'true';
+    if (overlay) document.body.classList.add('has-overlay-header');
     const headerSlot = document.querySelector('[data-slot="header"]');
     if (headerSlot) headerSlot.innerHTML = headerHTML(overlay);
     document.body.insertAdjacentHTML('beforeend', chromeHTML());
@@ -183,13 +210,15 @@
   window.LUNA.openDrawer = openDrawer;
   window.LUNA.closeDrawers = closeDrawers;
 
-  /* ---------- Header scroll (overlay -> solid) ---------- */
+  /* ---------- Header scroll: transparent-over-hero -> solid white ---------- */
   function wireHeaderScroll(overlay) {
     if (!overlay) return;
     const header = document.getElementById('site-header');
+    const threshold = () => window.innerHeight * 0.6;
     const onScroll = () => {
-      if (window.scrollY > window.innerHeight * 0.6) header.classList.remove('header--overlay');
-      else header.classList.add('header--overlay');
+      const atTop = window.scrollY < threshold();
+      header.classList.toggle('header--overlay', atTop);
+      document.body.classList.toggle('nav-solid', !atTop);
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -209,7 +238,7 @@
     if (!body) return;
     const cart = Store.cart;
     if (!cart.length) {
-      body.innerHTML = `<div class="drawer__empty"><p>Your bag is empty.</p><a class="btn btn--outline" href="collection.html?c=all" style="margin-top:1rem" onclick="LUNA.closeDrawers()">Start Shopping</a></div>`;
+      body.innerHTML = `<div class="drawer__empty"><p>Your bag is empty.</p><a class="btn btn--outline" href="collection.html?c=all&dept=men" style="margin-top:1rem" onclick="LUNA.closeDrawers()">Start Shopping</a></div>`;
       foot.innerHTML = '';
       return;
     }
@@ -277,6 +306,7 @@
   /* ---------- Public actions ---------- */
   window.LUNA.quickAdd = (id) => {
     const p = getProduct(id);
+    if (p.soldOut) { toast('Sorry — this item is sold out'); return; }
     Store.addToCart(id, { size: p.sizes[0], color: p.colors[0].name, qty: 1 });
     toast('Added to bag');
     openDrawer('cart');
@@ -292,7 +322,7 @@
   window.LUNA.doSearch = (e) => {
     e.preventDefault();
     const q = new FormData(e.target).get('q').trim();
-    if (q) location.href = `collection.html?c=all&q=${encodeURIComponent(q)}`;
+    if (q) location.href = `collection.html?c=all&dept=men&q=${encodeURIComponent(q)}`;
     return false;
   };
   window.LUNA.focusSearch = () => {

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coming Soon — Luno</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+  <div data-slot="header"></div>
+
+  <main>
+    <section class="soon">
+      <div class="soon__bg"><img src="https://picsum.photos/seed/luna-soon/1920/1200" alt="" /></div>
+      <div class="soon__content">
+        <p class="eyebrow"><span data-dept>Women</span></p>
+        <h1 class="soon__title">Coming Soon</h1>
+        <p class="soon__text">We're putting the finishing touches on the <span data-dept-lower>women's</span> collection.
+          Join the list and we'll let you know the moment it drops.</p>
+        <form class="soon__form" onsubmit="LUNA.toast('Thanks — we\\'ll keep you posted');return false;">
+          <input type="email" placeholder="Enter your email" required aria-label="Email" />
+          <button type="submit">Notify Me</button>
+        </form>
+        <a class="btn btn--outline btn--lg" style="margin-top:1.4rem" href="collection.html?c=all&dept=men">Shop Men Instead</a>
+      </div>
+    </section>
+  </main>
+
+  <div data-slot="footer"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/footer.js"></script>
+  <script>
+    (function () {
+      var dept = new URLSearchParams(location.search).get('dept') || 'women';
+      var label = dept.charAt(0).toUpperCase() + dept.slice(1);
+      var lower = dept === 'juniors' ? "juniors'" : "women's";
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-dept]').forEach(function (e) { e.textContent = label; });
+        document.querySelectorAll('[data-dept-lower]').forEach(function (e) { e.textContent = lower; });
+        document.title = label + ' — Coming Soon — Luno';
+      });
+    })();
+  </script>
+</body>
+</html>

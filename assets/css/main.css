@@ -37,22 +37,31 @@ ul { list-style: none; padding: 0; }
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
-/* ---------- Announcement bar ---------- */
+/* ---------- Announcement bar (moving marquee) ---------- */
 .topbar {
   height: var(--topbar-h);
   background: var(--bg-dark);
   color: var(--on-dark);
   display: flex;
   align-items: center;
-  justify-content: center;
   font-family: var(--font-display);
   font-size: var(--fs-xxs);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   overflow: hidden;
 }
-.topbar__track { display: flex; gap: 4rem; }
-.topbar__msg { white-space: nowrap; }
+.topbar__track {
+  display: flex;
+  flex: none;
+  width: max-content;
+  animation: ticker 32s linear infinite;
+}
+.topbar__msg { white-space: nowrap; padding: 0 2.4rem; position: relative; }
+.topbar__msg::after {
+  content: '✦'; position: absolute; right: -6px; top: 50%;
+  transform: translateY(-50%); color: var(--ink-3); font-size: 9px;
+}
+@keyframes ticker { to { transform: translateX(-50%); } }
 
 /* ---------- Header ---------- */
 .header {
@@ -74,10 +83,20 @@ ul { list-style: none; padding: 0; }
 .header__left { display: flex; align-items: center; gap: 1.25rem; }
 .header__right { display: flex; align-items: center; justify-content: flex-end; gap: 0.35rem; }
 
-/* Transparent-over-hero mode (homepage top) */
+/* Overlay-over-hero layering: opaque marquee pinned on top, header below it.
+   On scroll the marquee slides away and the (now solid) header docks to top. */
+.has-overlay-header .topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 70;
+  transition: transform var(--dur) var(--ease);
+}
+.has-overlay-header .header {
+  position: fixed; top: var(--topbar-h); left: 0; right: 0; z-index: 60;
+}
+.has-overlay-header.nav-solid .topbar { transform: translateY(-100%); }
+.has-overlay-header.nav-solid .header { top: 0; }
+
+/* Transparent look while over the hero */
 .header--overlay {
-  position: fixed;
-  left: 0; right: 0;
   background: transparent;
   border-color: transparent;
   color: var(--on-dark);
@@ -88,21 +107,18 @@ ul { list-style: none; padding: 0; }
 .header--overlay .search { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.35); color: var(--on-dark); }
 .header--overlay .search input::placeholder { color: rgba(245,245,244,0.75); }
 .header--overlay .search__icon { color: var(--on-dark); }
-body.has-overlay-header { --header-offset: 0px; }
 
 .logo {
   font-family: var(--font-logo);
   font-weight: 600;
-  font-size: 1.9rem;
+  font-size: 1.95rem;
   line-height: 1;
-  letter-spacing: 0.02em;
+  color: var(--ink);
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  color: var(--ink);
 }
-.logo__moon { width: 0.82em; height: 0.82em; transform: translateY(1px); }
-.logo b { font-weight: 600; }
+.logo__word { display: inline-flex; align-items: center; letter-spacing: 0.03em; }
+.logo__moon { width: 0.74em; height: 0.74em; margin-left: 0.02em; }
 
 /* Nav */
 .nav { display: flex; gap: 2.25rem; }
@@ -552,4 +568,86 @@ body.has-overlay-header { --header-offset: 0px; }
   .features { grid-template-columns: 1fr; }
   .pdp__gallery { grid-template-columns: 1fr; }
   .pdp__thumbs { flex-direction: row; }
+}
+
+/* ============================================================
+   Additions: moon-O logo, feature (FEAR-style) grid, coming soon
+   — kept in the existing LIGHT theme.
+   ============================================================ */
+
+/* Mobile-only search icon (full search bar shows on desktop) */
+.iconbtn--mobile-search { display: none; }
+
+/* "Soon" tag next to gated nav items */
+.soon-tag {
+  font-family: var(--font-display); font-weight: 700; font-size: var(--fs-xxs);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  background: var(--bg-muted); color: var(--ink-2);
+  padding: 0.15rem 0.5rem; border-radius: var(--radius-pill); margin-left: 0.45rem;
+}
+
+/* ---------- Feature section head + pill ---------- */
+.fear-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.6rem; }
+.fear-title { font-family: var(--font-display); font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; font-size: clamp(1.5rem, 3vw, 2.2rem); }
+.pill {
+  font-family: var(--font-display); font-weight: 700; text-transform: uppercase;
+  letter-spacing: var(--tracking-wide); font-size: var(--fs-xs);
+  padding: 0.55rem 1.2rem; border: 1px solid var(--line-2); border-radius: var(--radius-pill);
+  transition: all var(--dur) var(--ease);
+}
+.pill:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* ---------- Feature (FEAR-style) product cards — LIGHT ---------- */
+.grid-fear { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(12px, 1.5vw, 22px); }
+.fcard { display: flex; flex-direction: column; position: relative; }
+.fcard__media {
+  position: relative; aspect-ratio: 4/5; overflow: hidden;
+  border-radius: 12px; background: var(--bg-muted); display: block;
+}
+.fcard__img { width: 100%; height: 100%; object-fit: cover; transition: opacity var(--dur) var(--ease), transform 800ms var(--ease); }
+.fcard__img--hover { position: absolute; inset: 0; opacity: 0; }
+.fcard:hover .fcard__img--hover { opacity: 1; }
+.fcard:hover .fcard__img { transform: scale(1.03); }
+.fcard.is-sold .fcard__img { filter: grayscale(0.3) brightness(0.94); }
+.fcard__sold {
+  position: absolute; top: 12px; left: 12px; z-index: 3;
+  background: #fff; color: var(--ink);
+  font-family: var(--font-display); font-weight: 700; font-size: var(--fs-xxs);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  padding: 0.35rem 0.7rem; border-radius: var(--radius-pill); box-shadow: var(--shadow-1);
+}
+.fcard__dots { position: absolute; bottom: 12px; left: 0; right: 0; z-index: 3; display: flex; gap: 6px; justify-content: center; }
+.fdot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.6); box-shadow: 0 0 4px rgba(0,0,0,0.35); }
+.fdot.is-active { background: #fff; }
+.fcard .prod__wish { top: 12px; right: 12px; }
+.fcard:hover .prod__wish { opacity: 1; transform: none; }
+.fcard__info { padding: 0.9rem 0.2rem 0; }
+.fcard__name { display: block; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; font-size: var(--fs-sm); line-height: 1.3; color: var(--ink); }
+.fcard__price { margin-top: 0.4rem; display: flex; align-items: baseline; gap: 0.5rem; }
+.fcard__price b { font-family: var(--font-display); font-weight: 700; font-size: var(--fs-base); }
+.fcard__price del { color: var(--ink-3); font-size: var(--fs-xs); }
+
+/* ---------- Coming soon page (light) ---------- */
+.soon { position: relative; min-height: calc(100vh - var(--header-h) - var(--topbar-h)); display: grid; place-items: center; text-align: center; overflow: hidden; }
+.soon__bg { position: absolute; inset: 0; }
+.soon__bg img { width: 100%; height: 100%; object-fit: cover; }
+.soon__bg::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.62); }
+.soon__content { position: relative; z-index: 2; padding: 3rem var(--gutter); max-width: 620px; color: var(--ink); }
+.soon__title { font-family: var(--font-display); font-weight: 900; text-transform: uppercase; font-size: var(--fs-2xl); line-height: 0.95; letter-spacing: -0.01em; }
+.soon__text { color: var(--ink-2); margin: 1.2rem auto 2rem; max-width: 46ch; }
+.soon__form { display: flex; max-width: 420px; margin: 0 auto; border: 1px solid var(--line-2); background: var(--bg); }
+.soon__form input { flex: 1; background: transparent; border: none; outline: none; color: var(--ink); padding: 1rem 1.1rem; }
+.soon__form input::placeholder { color: var(--ink-3); }
+.soon__form button { padding: 0 1.6rem; background: var(--ink); color: #fff; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: var(--tracking-wide); font-size: var(--fs-sm); }
+
+/* ---------- Responsive (additions) ---------- */
+@media (max-width: 1100px) {
+  .grid-fear { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 900px) {
+  .iconbtn--mobile-search { display: inline-grid; }
+  .grid-fear { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 620px) {
+  .fcard .prod__wish { opacity: 1; transform: none; }
 }

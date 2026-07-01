@@ -1,8 +1,8 @@
 /* ============================================================
-   Luna — Homepage behaviour: hero slider, focus tabs, carousels
+   Luno — Homepage behaviour: hero slider + feature grids (FEAR-style)
    ============================================================ */
 (function () {
-  const { products, productCardHTML } = window.LUNA;
+  const { products, fearCardHTML } = window.LUNA;
 
   /* ---------- Hero slider ---------- */
   function initHero() {
@@ -20,50 +20,19 @@
     go(0); start();
   }
 
-  /* ---------- Populate a product carousel/grid by filter ---------- */
   function fill(selector, list) {
     const el = document.querySelector(selector);
-    if (el) el.innerHTML = list.map(productCardHTML).join('');
-  }
-
-  /* ---------- Categories in focus tabs ---------- */
-  function initFocus() {
-    const tabs = [...document.querySelectorAll('.focus__tab')];
-    const track = document.querySelector('[data-focus-track]');
-    if (!track) return;
-    const render = (cat) => {
-      const list = products.filter((p) => cat === 'all' || p.category === cat).slice(0, 8);
-      track.innerHTML = list.map(productCardHTML).join('');
-    };
-    tabs.forEach((t) => t.addEventListener('click', () => {
-      tabs.forEach((x) => x.classList.remove('is-active'));
-      t.classList.add('is-active');
-      render(t.dataset.cat);
-    }));
-    render(tabs[0] ? tabs[0].dataset.cat : 'all');
-  }
-
-  /* ---------- Carousel arrow buttons ---------- */
-  function initCarouselNav() {
-    const I = window.LUNA.I;
-    document.querySelectorAll('[data-scroll]').forEach((btn) => {
-      btn.innerHTML = btn.dataset.scroll === 'next' ? I.chevR : I.chevL;
-      btn.addEventListener('click', () => {
-        const section = btn.closest('section') || document;
-        const track = section.querySelector('.carousel__track');
-        if (!track) return;
-        const dir = btn.dataset.scroll === 'next' ? 1 : -1;
-        track.scrollBy({ left: dir * track.clientWidth * 0.8, behavior: 'smooth' });
-      });
-    });
+    if (el) el.innerHTML = list.map(fearCardHTML).join('');
   }
 
   function boot() {
     initHero();
-    fill('[data-new-arrivals]', products.filter((p) => p.badge === 'new').concat(products).slice(0, 8));
-    fill('[data-best-sellers]', products.filter((p) => p.compareAt).slice(0, 8));
-    initFocus();
-    initCarouselNav();
+    // NEW IN — newest first, then fill up
+    const newIn = products.filter((p) => p.badge === 'new').concat(products).slice(0, 8);
+    fill('[data-new-in]', newIn);
+    // BEST SELLERS — discounted / most-loved
+    const best = products.filter((p) => p.compareAt).concat(products.slice(0, 8)).slice(0, 8);
+    fill('[data-best]', best);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

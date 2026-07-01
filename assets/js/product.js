@@ -121,5 +121,5 @@
     .slice(0, 4);
   root.querySelector('[data-related]').innerHTML = related.map(productCardHTML).join('');
 
-  document.title = `${p.name} — Luna`;
+  document.title = `${p.name} — Luno`;
 })();

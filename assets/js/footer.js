@@ -1,18 +1,16 @@
 /* ============================================================
-   Luna — Footer render + misc icon injection
+   Luno — Footer render + misc icon injection
    ============================================================ */
 (function () {
   const I = window.LUNA.I;
+  const logo = window.LUNA.logoHTML ? window.LUNA.logoHTML() : 'LUNO';
 
   const footerHTML = `
   <footer class="footer">
     <div class="container">
       <div class="footer__top">
         <div class="footer__brand">
-          <span class="logo">
-            <svg class="logo__moon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 2A10 10 0 1 0 22 14.5 8 8 0 0 1 15.5 2z"/></svg>
-            <b>LUNA</b>
-          </span>
+          <span class="logo">${logo}</span>
           <p>Modern essentials and seasonal apparel, designed in a refined monochrome palette for everyday wear.</p>
           <div class="footer__social">
             <a href="#" aria-label="Instagram">${I.ig}</a>
@@ -24,8 +22,8 @@
         <div class="footer__col">
           <h5>Shop</h5>
           <a href="collection.html?c=all&dept=men">Men</a>
-          <a href="collection.html?c=all&dept=women">Women</a>
-          <a href="collection.html?c=all&dept=juniors">Juniors</a>
+          <a href="coming-soon.html?dept=women">Women <span class="soon-tag">Soon</span></a>
+          <a href="coming-soon.html?dept=juniors">Juniors <span class="soon-tag">Soon</span></a>
           <a href="collection.html?c=all&sale=1">Sale</a>
           <a href="collection.html?c=footwear&dept=men">Footwear</a>
         </div>
@@ -39,7 +37,7 @@
         </div>
         <div class="footer__col">
           <h5>Company</h5>
-          <a href="#">About Luna</a>
+          <a href="#">About Luno</a>
           <a href="#">Stores</a>
           <a href="#">Careers</a>
           <a href="#">Privacy Policy</a>
@@ -47,7 +45,7 @@
         </div>
       </div>
       <div class="footer__bottom">
-        <p>© ${new Date().getFullYear()} Luna. All rights reserved. A demo storefront — not a real store.</p>
+        <p>© ${new Date().getFullYear()} Luno. All rights reserved. A demo storefront — not a real store.</p>
         <div class="footer__pay">
           <span>VISA</span><span>MASTERCARD</span><span>COD</span><span>EASYPAISA</span>
         </div>
