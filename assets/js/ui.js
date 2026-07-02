@@ -108,16 +108,21 @@
       </div>
     </nav>
 
-    <div class="toast" data-toast></div>`;
+    <div class="toast" data-toast></div>
+
+    <a class="wa-fab" href="https://wa.me/923153909606" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+      <svg class="wa-fab__icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.975-1.418A9.955 9.955 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.94 7.94 0 0 1-4.054-1.113l-.29-.174-3.002.856.843-2.946-.19-.302A7.944 7.944 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8zm4.406-5.965c-.242-.121-1.43-.705-1.652-.786-.222-.08-.383-.12-.544.121-.16.242-.623.786-.764.947-.14.162-.281.182-.523.061-.242-.121-1.022-.377-1.947-1.201-.72-.641-1.207-1.433-1.348-1.674-.14-.242-.015-.373.106-.493.109-.109.242-.282.363-.423.121-.14.162-.242.242-.403.08-.16.04-.303-.02-.423-.061-.121-.544-1.311-.745-1.794-.197-.472-.397-.408-.544-.416l-.463-.008c-.16 0-.423.06-.644.302-.222.242-.846.827-.846 2.017 0 1.19.866 2.34.987 2.502.121.16 1.703 2.6 4.127 3.646.577.249 1.027.397 1.378.508.579.184 1.106.158 1.523.096.465-.069 1.43-.585 1.632-1.15.2-.564.2-1.048.14-1.149-.06-.1-.222-.16-.463-.282z"/></svg>
+      <span class="wa-fab__label">Chat with us</span>
+    </a>`;
   }
 
   /* ---------- Standard product card (collection / related) ---------- */
   function productCardHTML(p) {
     const badge = p.badge === 'sale'
-      ? `<span class="prod__badge prod__badge--sale">-${p.discount}%</span>`
+      ? `<span class="prod__badge prod__badge--sale">Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs</span>`
       : p.badge === 'new' ? `<span class="prod__badge">New</span>` : '';
     const priceHTML = p.compareAt
-      ? `<b>${formatPrice(p.price)}</b><del>${formatPrice(p.compareAt)}</del><span class="off">-${p.discount}%</span>`
+      ? `<b>${formatPrice(p.price)}</b><del>${formatPrice(p.compareAt)}</del><span class="off">Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs</span>`
       : `<b>${formatPrice(p.price)}</b>`;
     const wished = Store.isWished(p.id) ? 'is-active' : '';
     return `

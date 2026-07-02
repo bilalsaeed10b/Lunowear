@@ -12,7 +12,7 @@
 
   function priceHTML() {
     return p.compareAt
-      ? `<b>${formatPrice(p.price)}</b><del>${formatPrice(p.compareAt)}</del><span class="off">-${p.discount}% off</span>`
+      ? `<b>${formatPrice(p.price)}</b><del>${formatPrice(p.compareAt)}</del><span class="off">Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs</span>`
       : `<b>${formatPrice(p.price)}</b>`;
   }
 
@@ -28,7 +28,7 @@
         <div class="pdp__main"><img src="${p.images[0]}" alt="${p.name}" data-main-img></div>
       </div>
       <div class="pdp__details">
-        ${p.badge ? `<span class="eyebrow" style="color:var(--sale)">${p.badge === 'sale' ? `Save ${p.discount}%` : 'New Arrival'}</span>` : ''}
+        ${p.badge ? `<span class="eyebrow" style="color:var(--sale)">${p.badge === 'sale' ? `Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs` : 'New Arrival'}</span>` : ''}
         <h1 class="pdp__title">${p.name}</h1>
         <p class="pdp__sub">${p.subtitle}</p>
         <div class="pdp__price">${priceHTML()}</div>

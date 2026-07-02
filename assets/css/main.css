@@ -899,3 +899,75 @@ ul { list-style: none; padding: 0; }
 @media (max-width: 620px) {
   .vcards { grid-template-columns: 1fr; }
 }
+
+/* ---------- WhatsApp Floating Action Button ---------- */
+.wa-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #25d366;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0 12px;
+  width: 56px;
+  height: 56px;
+  box-shadow: 0 4px 18px rgba(37, 211, 102, 0.45), 0 2px 8px rgba(0,0,0,0.12);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: width 380ms var(--ease), opacity 380ms var(--ease), box-shadow 260ms var(--ease);
+}
+/* Hide WhatsApp FAB when loader is active */
+.loader:not(.is-done) ~ .wa-fab {
+  opacity: 0;
+  pointer-events: none;
+}
+.wa-fab:hover {
+  width: 190px;
+  box-shadow: 0 6px 28px rgba(37, 211, 102, 0.55), 0 4px 14px rgba(0,0,0,0.16);
+}
+.wa-fab__icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+.wa-fab__label {
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 260ms var(--ease) 60ms, transform 260ms var(--ease) 60ms;
+  pointer-events: none;
+}
+.wa-fab:hover .wa-fab__label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Pulse ring animation on the FAB */
+.wa-fab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55);
+  animation: wa-pulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes wa-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55); }
+  60%  { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+@media (max-width: 620px) {
+  .wa-fab { bottom: 20px; right: 18px; height: 50px; width: 50px; padding: 0 10px; }
+  .wa-fab:hover { width: 50px; }
+  .wa-fab__label { display: none; }
+}
