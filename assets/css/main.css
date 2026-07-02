@@ -661,6 +661,9 @@ ul { list-style: none; padding: 0; }
   border-radius: 50%;
   overflow: hidden;
   vertical-align: middle;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 
   /* Default theme: Dark Moon (for black/dark text) - charcoal-silver, blends beautifully with black letters */
   --moon-bg: radial-gradient(circle at 32% 30%, #565b64 0%, #353a42 40%, #1c2026 72%, #0e1014 100%);
@@ -668,11 +671,11 @@ ul { list-style: none; padding: 0; }
     inset -0.16em -0.16em 0.3em rgba(0, 0, 0, 0.85),
     inset 0.05em 0.05em 0.14em rgba(255, 255, 255, 0.15),
     0 0 0 1px rgba(0, 0, 0, 0.06);
-  --moon-crater-1: rgba(255, 255, 255, 0.06);
-  --moon-crater-2: rgba(255, 255, 255, 0.04);
-  --moon-crater-3: rgba(255, 255, 255, 0.05);
-  --moon-crater-4: rgba(255, 255, 255, 0.03);
-  --moon-crater-5: rgba(255, 255, 255, 0.04);
+  --moon-crater-1: rgba(255, 255, 255, 0.22);
+  --moon-crater-2: rgba(255, 255, 255, 0.15);
+  --moon-crater-3: rgba(255, 255, 255, 0.18);
+  --moon-crater-4: rgba(255, 255, 255, 0.12);
+  --moon-crater-5: rgba(255, 255, 255, 0.16);
   --moon-shading: 
     radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.12), transparent 42%),
     radial-gradient(circle at 76% 80%, rgba(0, 0, 0, 0.75), transparent 55%);
@@ -703,15 +706,15 @@ ul { list-style: none; padding: 0; }
 /* Scrolling crater surface -> continuous axial spin (GPU transform) */
 .moon::before {
   content: '';
-  position: absolute; top: 0; left: 0; height: 100%; width: 200%;
+  position: absolute; top: 0; left: 0; height: 200%; width: 200%;
   background-image:
     radial-gradient(circle at 12% 42%, var(--moon-crater-1) 0 6%, transparent 7%),
     radial-gradient(circle at 30% 22%, var(--moon-crater-2) 0 3.5%, transparent 4.5%),
     radial-gradient(circle at 38% 66%, var(--moon-crater-3) 0 5%, transparent 6%),
     radial-gradient(circle at 46% 38%, var(--moon-crater-4) 0 2.5%, transparent 3.5%),
     radial-gradient(circle at 22% 82%, var(--moon-crater-5) 0 3%, transparent 4%);
-  background-size: 50% 100%;
-  background-repeat: repeat-x;
+  background-size: 50% 50%;
+  background-repeat: repeat;
   animation: moonroll 9s linear infinite;
   transition: background-image var(--dur) var(--ease);
 }
@@ -723,7 +726,19 @@ ul { list-style: none; padding: 0; }
   pointer-events: none;
   transition: background var(--dur) var(--ease);
 }
-@keyframes moonroll { to { transform: translateX(-50%); } }
+.moon.moon--js-rotate::before {
+  animation: none !important;
+  transform: translate(calc(var(--moon-tx, 0) * 1%), calc(var(--moon-ty, 0) * 1%)) !important;
+}
+.moon.is-tilting {
+  cursor: grab;
+  transition: transform 0.15s ease-out, box-shadow var(--dur) var(--ease) !important;
+}
+.moon.is-grabbing {
+  cursor: grabbing;
+  transition: none !important;
+}
+@keyframes moonroll { to { transform: translate(-50%, 0); } }
 
 /* ---------- Loading screen ---------- */
 .loader {
@@ -767,3 +782,104 @@ ul { list-style: none; padding: 0; }
 /* Decorative brand moon in the footer */
 .footer__moon { margin-top: 1.6rem; }
 .footer__moon .moon { width: 64px; height: 64px; }
+
+/* ============================================================
+   Motion FX: scroll reveals + pointer tilt (html.fx set by fx.js)
+   ============================================================ */
+.fx [data-reveal] {
+  opacity: 0;
+  transform: perspective(900px) translateY(34px) rotateX(6deg);
+  transition: opacity 0.7s var(--ease), transform 0.9s var(--ease);
+  will-change: opacity, transform;
+}
+.fx [data-reveal].in-view {
+  opacity: 1;
+  transform: perspective(900px) translateY(0) rotateX(0deg);
+}
+.fx .hero__img, .fx .lookbook > img, .fx .soon__bg img { will-change: transform; }
+
+/* Tilt targets: smooth return, snappy follow while tilting */
+.fx .fcard__media, .fx .prod__media, .fx .vcard, .fx .ccard {
+  transition: transform 0.55s var(--ease), box-shadow 0.55s var(--ease), opacity 0.7s var(--ease);
+  transform-style: preserve-3d;
+}
+.fx .is-tilting { transition: none !important; box-shadow: var(--shadow-2); z-index: 2; }
+
+/* Floating moon (About / Contact heroes) */
+.moon--float { animation: moonfloat 7s ease-in-out infinite; }
+@keyframes moonfloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+/* ============================================================
+   About / Contact pages
+   ============================================================ */
+.page-hero { text-align: center; padding: clamp(48px, 8vw, 104px) var(--gutter) clamp(16px, 3vw, 36px); }
+.page-hero__inner { max-width: 760px; margin-inline: auto; }
+.page-hero .moon { width: clamp(72px, 9vw, 112px); height: clamp(72px, 9vw, 112px); }
+.page-hero__title {
+  font-family: var(--font-display); font-weight: 900; text-transform: uppercase;
+  font-size: var(--fs-2xl); line-height: 0.95; letter-spacing: -0.01em; margin-top: 1.4rem;
+}
+.page-hero__sub { color: var(--ink-2); max-width: 54ch; margin: 1rem auto 0; }
+
+/* Split story block */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 72px); align-items: center; }
+.split__img { border-radius: 12px; overflow: hidden; aspect-ratio: 4/3; background: var(--bg-muted); }
+.split__img img { width: 100%; height: 100%; object-fit: cover; }
+.split__body h2 {
+  font-family: var(--font-display); font-weight: 800; text-transform: uppercase;
+  font-size: var(--fs-xl); line-height: 1.05; margin: 0.6rem 0 1.1rem;
+}
+.split__body p { color: var(--ink-2); margin-bottom: 1rem; }
+.split__body .btn { margin-top: 0.6rem; }
+
+/* Stats band */
+.stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+  border-block: 1px solid var(--line); padding-block: clamp(28px, 4vw, 52px); text-align: center;
+}
+.stat b { display: block; font-family: var(--font-display); font-weight: 800; font-size: clamp(1.9rem, 4vw, 3rem); line-height: 1; }
+.stat span {
+  display: block; margin-top: 0.5rem; color: var(--ink-2);
+  font-family: var(--font-display); font-size: var(--fs-xs);
+  text-transform: uppercase; letter-spacing: var(--tracking-wide);
+}
+
+/* Value cards */
+.vcards { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(12px, 1.5vw, 22px); }
+.vcard { position: relative; border: 1px solid var(--line); border-radius: 12px; padding: 1.9rem 1.6rem; background: var(--bg); }
+.vcard [data-ico] svg { width: 30px; height: 30px; stroke: var(--ink); margin-bottom: 1.1rem; }
+.vcard h3 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; font-size: var(--fs-sm); }
+.vcard p { color: var(--ink-2); font-size: var(--fs-sm); margin-top: 0.5rem; }
+
+/* Contact layout */
+.contact-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(24px, 4vw, 64px); align-items: start; }
+.contact-form { border: 1px solid var(--line); border-radius: 12px; padding: clamp(20px, 3vw, 40px); background: var(--bg); }
+.field { margin-bottom: 1.2rem; }
+.input, .textarea {
+  width: 100%; border: 1px solid var(--line-2); background: var(--bg);
+  padding: 0.95rem 1rem; font: inherit; color: var(--ink);
+  transition: border-color var(--dur) var(--ease);
+}
+.input:focus, .textarea:focus { outline: none; border-color: var(--ink); }
+.textarea { min-height: 150px; resize: vertical; }
+.ccards { display: grid; gap: 14px; }
+.ccard {
+  position: relative; display: flex; gap: 1rem; align-items: flex-start;
+  border: 1px solid var(--line); border-radius: 12px; padding: 1.4rem; background: var(--bg);
+}
+.ccard [data-ico] { flex: none; }
+.ccard [data-ico] svg { width: 24px; height: 24px; stroke: var(--ink); margin-top: 2px; }
+.ccard h4 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; font-size: var(--fs-sm); }
+.ccard p { color: var(--ink-2); font-size: var(--fs-sm); margin-top: 0.25rem; }
+
+@media (max-width: 900px) {
+  .split, .contact-grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .vcards { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 620px) {
+  .vcards { grid-template-columns: 1fr; }
+}

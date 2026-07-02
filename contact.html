@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Luno</title>
+  <meta name="description" content="Get in touch with the Luno team — support, orders, and everything else." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+  <div class="loader" id="luno-loader"></div>
+  <div data-slot="header"></div>
+
+  <main>
+    <!-- Page hero with floating 3D moon -->
+    <section class="page-hero">
+      <div class="page-hero__inner">
+        <span class="moon moon--float" aria-hidden="true"></span>
+        <p class="eyebrow" style="margin-top:1.6rem">We're Listening</p>
+        <h1 class="page-hero__title">Get in Touch</h1>
+        <p class="page-hero__sub">Questions about an order, a fit, or a drop?
+          Send us a message — a real human replies within 24 hours.</p>
+      </div>
+    </section>
+
+    <!-- Form + info cards -->
+    <section class="section container" style="padding-top:clamp(24px,4vw,48px)">
+      <div class="contact-grid">
+        <form class="contact-form" onsubmit="LUNA.toast('Message sent — we\'ll reply within 24 hours');this.reset();return false;">
+          <div class="field">
+            <label class="pdp__label" for="cf-name">Name</label>
+            <input class="input" id="cf-name" type="text" placeholder="Your name" required />
+          </div>
+          <div class="field">
+            <label class="pdp__label" for="cf-email">Email</label>
+            <input class="input" id="cf-email" type="email" placeholder="you@example.com" required />
+          </div>
+          <div class="field">
+            <label class="pdp__label" for="cf-subject">Subject</label>
+            <select class="input" id="cf-subject">
+              <option>Order support</option>
+              <option>Returns &amp; exchanges</option>
+              <option>Sizing help</option>
+              <option>Wholesale / collabs</option>
+              <option>Something else</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="pdp__label" for="cf-msg">Message</label>
+            <textarea class="textarea" id="cf-msg" placeholder="Tell us what's up…" required></textarea>
+          </div>
+          <button class="btn btn--block btn--lg" type="submit">Send Message</button>
+        </form>
+
+        <div class="ccards">
+          <div class="ccard" data-feature="mail"><span data-ico></span>
+            <div><h4>Email Us</h4><p>hello@luno.example<br>Replies within 24 hours</p></div>
+          </div>
+          <div class="ccard" data-feature="phone"><span data-ico></span>
+            <div><h4>Call or WhatsApp</h4><p>+92 300 0000000<br>Mon–Sat, 10am–8pm</p></div>
+          </div>
+          <div class="ccard" data-feature="pin"><span data-ico></span>
+            <div><h4>Flagship Store</h4><p>Main Boulevard, Gulberg<br>Lahore, Pakistan</p></div>
+          </div>
+          <div class="ccard" data-feature="clock"><span data-ico></span>
+            <div><h4>Store Hours</h4><p>Mon–Sat: 10am–10pm<br>Sun: 12pm–10pm</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="section container" style="max-width:860px">
+      <div class="sec-head"><h2 class="sec-title">FAQs</h2></div>
+      <div class="accordion">
+        <div class="accordion__item">
+          <button class="accordion__head">How long does delivery take?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="accordion__body"><p>2–4 working days nationwide. Orders over PKR 3,500 ship free; you'll get a tracking link the moment it leaves our warehouse.</p></div>
+        </div>
+        <div class="accordion__item">
+          <button class="accordion__head">What's your return policy?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="accordion__body"><p>Easy 14-day returns on unworn items with tags attached. Start a return from your account or just message us the order number.</p></div>
+        </div>
+        <div class="accordion__item">
+          <button class="accordion__head">When are Women &amp; Juniors launching?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="accordion__body"><p>Soon! Both collections are in the works. Join the list on the coming-soon page and we'll email you the moment they drop.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div data-slot="footer"></div>
+
+  <script src="assets/js/loader.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/footer.js"></script>
+  <script src="assets/js/fx.js"></script>
+  <script>
+    // FAQ accordion (reuses PDP accordion styles)
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.accordion__head').forEach(function (h) {
+        h.addEventListener('click', function () {
+          var item = h.parentElement, body = h.nextElementSibling;
+          var open = item.classList.toggle('is-open');
+          body.style.maxHeight = open ? body.scrollHeight + 'px' : 0;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

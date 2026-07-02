@@ -26,6 +26,8 @@
   }
   function done() {
     el.classList.add('is-done');
+    // Let page FX (scroll reveals etc.) know the curtain is lifting.
+    try { window.dispatchEvent(new CustomEvent('luno:loader-done')); } catch (e) {}
     setTimeout(remove, 600);
   }
 

@@ -34,11 +34,11 @@
           <a href="#">Shipping &amp; Delivery</a>
           <a href="#">Returns &amp; Exchanges</a>
           <a href="#">Size Guide</a>
-          <a href="#">Contact Us</a>
+          <a href="contact.html">Contact Us</a>
         </div>
         <div class="footer__col">
           <h5>Company</h5>
-          <a href="#">About Luno</a>
+          <a href="about.html">About Luno</a>
           <a href="#">Stores</a>
           <a href="#">Careers</a>
           <a href="#">Privacy Policy</a>

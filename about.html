@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Luno</title>
+  <meta name="description" content="The story behind Luno — modern essentials designed by night, worn by day." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+  <div class="loader" id="luno-loader"></div>
+  <div data-slot="header"></div>
+
+  <main>
+    <!-- Page hero with floating 3D moon -->
+    <section class="page-hero">
+      <div class="page-hero__inner">
+        <span class="moon moon--float" aria-hidden="true"></span>
+        <p class="eyebrow" style="margin-top:1.6rem">Our Story</p>
+        <h1 class="page-hero__title">Designed by Night,<br>Worn by Day</h1>
+        <p class="page-hero__sub">Luno started with a simple idea: everyday essentials should feel considered —
+          quietly confident pieces you reach for without thinking twice.</p>
+      </div>
+    </section>
+
+    <!-- Story split -->
+    <section class="section container" style="padding-top:clamp(24px,4vw,48px)">
+      <div class="split">
+        <div class="split__img" data-tilt>
+          <img src="https://picsum.photos/seed/luna-about/1200/900" alt="Inside the Luno studio" />
+        </div>
+        <div class="split__body">
+          <p class="eyebrow">About Luno</p>
+          <h2>Essentials with a Considered Edge</h2>
+          <p>We design in a refined monochrome palette so every piece layers with the next.
+            No loud logos, no throwaway trends — just precise fits, durable fabrication, and
+            details you notice the second time you look.</p>
+          <p>Every drop is small by design. We'd rather make fewer things properly than
+            flood the rail with more of the same.</p>
+          <a class="btn" href="collection.html?c=all&dept=men">Shop the Collection</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Animated stats -->
+    <section class="container">
+      <div class="stats">
+        <div class="stat"><b data-count-to="120" data-suffix="+">0</b><span>Cities Delivered</span></div>
+        <div class="stat"><b data-count-to="50" data-suffix="K+">0</b><span>Happy Customers</span></div>
+        <div class="stat"><b data-count-to="24" data-suffix="">0</b><span>Drops a Year</span></div>
+        <div class="stat"><b data-count-to="98" data-suffix="%">0</b><span>5-Star Reviews</span></div>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="section container">
+      <div class="sec-head"><h2 class="sec-title">What We Stand For</h2></div>
+      <div class="vcards">
+        <div class="vcard" data-feature="shield"><span data-ico></span>
+          <h3>Built to Last</h3>
+          <p>Heavyweight fabrics, reinforced seams and hardware that survives the wash — season after season.</p>
+        </div>
+        <div class="vcard" data-feature="refresh"><span data-ico></span>
+          <h3>Responsible by Design</h3>
+          <p>Small-batch drops, recyclable packaging and zero over-production. Less waste, better clothes.</p>
+        </div>
+        <div class="vcard" data-feature="truck"><span data-ico></span>
+          <h3>Fast, Nationwide</h3>
+          <p>2–4 day delivery across the country with easy 14-day returns — no questions asked.</p>
+        </div>
+        <div class="vcard" data-feature="support"><span data-ico></span>
+          <h3>People First</h3>
+          <p>Real humans on support, seven days a week. If something's off, we make it right.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA band -->
+    <section class="lookbook">
+      <img src="https://picsum.photos/seed/luna-about-cta/1920/1000" alt="" />
+      <div class="lookbook__content">
+        <p class="eyebrow" style="color:rgba(255,255,255,.85)">Join the Journey</p>
+        <h2 class="lookbook__title">The Next Drop Lands Soon</h2>
+        <p class="lookbook__text">New silhouettes, same philosophy. Be first in line when the moon turns.</p>
+        <a class="btn btn--light btn--lg" href="collection.html?c=all&dept=men">Shop New In</a>
+      </div>
+    </section>
+  </main>
+
+  <div data-slot="footer"></div>
+
+  <script src="assets/js/loader.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/footer.js"></script>
+  <script src="assets/js/fx.js"></script>
+</body>
+</html>
