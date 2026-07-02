@@ -174,15 +174,17 @@
       return 0;
     }
 
+    function wrapT(val) {
+      var v = val % 50;
+      if (v > 0) v -= 50;
+      return v;
+    }
+
     function animate() {
       moons.forEach(function (moon) {
         if (!moon.isDragging) {
-          moon.tx = (moon.tx || 0) + moon.speedX;
-          moon.ty = (moon.ty || 0) + moon.speedY;
-          if (moon.tx < -100) moon.tx += 100;
-          if (moon.tx > 100) moon.tx -= 100;
-          if (moon.ty < -100) moon.ty += 100;
-          if (moon.ty > 100) moon.ty -= 100;
+          moon.tx = wrapT((moon.tx || 0) + moon.speedX);
+          moon.ty = wrapT((moon.ty || 0) + moon.speedY);
           moon.style.setProperty('--moon-tx', moon.tx);
           moon.style.setProperty('--moon-ty', moon.ty);
           moon.speedX = moon.speedX * friction + defaultSpeedX * (1 - friction);
@@ -235,8 +237,8 @@
         var dx = e.clientX - startX;
         var dy = e.clientY - startY;
         
-        var newTx = startTx + (dx / width) * 50;
-        var newTy = startTy + (dy / height) * 50;
+        var newTx = wrapT(startTx + (dx / width) * 50);
+        var newTy = wrapT(startTy + (dy / height) * 50);
         
         var currentDx = e.clientX - lastX;
         var currentDy = e.clientY - lastY;
@@ -257,6 +259,8 @@
         var rect = hoveredMoon.getBoundingClientRect();
         var px = (e.clientX - rect.left) / rect.width - 0.5;
         var py = (e.clientY - rect.top) / rect.height - 0.5;
+        if (px > 0.5) px = 0.5; if (px < -0.5) px = -0.5;
+        if (py > 0.5) py = 0.5; if (py < -0.5) py = -0.5;
         var tiltX = (-py * 15).toFixed(2);
         var tiltY = (px * 18).toFixed(2);
         hoveredMoon.style.transform = 'perspective(200px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) scale(1.08)';
@@ -264,6 +268,8 @@
         var rect = draggedMoon.getBoundingClientRect();
         var px = (e.clientX - rect.left) / rect.width - 0.5;
         var py = (e.clientY - rect.top) / rect.height - 0.5;
+        if (px > 0.5) px = 0.5; if (px < -0.5) px = -0.5;
+        if (py > 0.5) py = 0.5; if (py < -0.5) py = -0.5;
         var tiltX = (-py * 15).toFixed(2);
         var tiltY = (px * 18).toFixed(2);
         draggedMoon.style.transform = 'perspective(200px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) scale(1.08)';

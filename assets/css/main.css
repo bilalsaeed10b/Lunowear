@@ -672,16 +672,18 @@ ul { list-style: none; padding: 0; }
   --moon-bg: radial-gradient(circle at 32% 30%, #565b64 0%, #353a42 40%, #1c2026 72%, #0e1014 100%);
   --moon-shadow-inset: 
     inset -0.16em -0.16em 0.3em rgba(0, 0, 0, 0.85),
-    inset 0.05em 0.05em 0.14em rgba(255, 255, 255, 0.15),
+    inset 0.05em 0.05em 0.14em rgba(255, 255, 255, 0.07),
     0 0 0 1px rgba(0, 0, 0, 0.06);
-  --moon-crater-1: rgba(255, 255, 255, 0.22);
-  --moon-crater-2: rgba(255, 255, 255, 0.15);
-  --moon-crater-3: rgba(255, 255, 255, 0.18);
-  --moon-crater-4: rgba(255, 255, 255, 0.12);
-  --moon-crater-5: rgba(255, 255, 255, 0.16);
-  --moon-shading: 
-    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.12), transparent 42%),
+  --moon-crater-1: rgba(255, 255, 255, 0.26);
+  --moon-crater-2: rgba(255, 255, 255, 0.18);
+  --moon-crater-3: rgba(255, 255, 255, 0.22);
+  --moon-crater-4: rgba(255, 255, 255, 0.15);
+  --moon-crater-5: rgba(255, 255, 255, 0.20);
+  --moon-shading:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.06), transparent 42%),
     radial-gradient(circle at 76% 80%, rgba(0, 0, 0, 0.75), transparent 55%);
+  --moon-limb: rgba(0, 0, 0, 0.55);
+  --moon-limb-2: rgba(0, 0, 0, 0.82);
 
   background: var(--moon-bg);
   box-shadow: var(--moon-shadow-inset);
@@ -691,19 +693,21 @@ ul { list-style: none; padding: 0; }
 /* Light Moon style (for white/light text, e.g., overlay header) & decorative brand footer moon */
 .header--overlay .logo .moon,
 .footer__moon .moon {
-  --moon-bg: radial-gradient(circle at 32% 30%, #f5f2ea 0%, #e6e1d4 40%, #cbc3b2 72%, #a9a08c 100%);
+  --moon-bg: radial-gradient(circle at 32% 30%, #ffffff 0%, #f4eee3 40%, #dfd5be 72%, #c3b8a1 100%);
   --moon-shadow-inset: 
-    inset -0.16em -0.16em 0.3em rgba(60, 52, 34, 0.5),
-    inset 0.05em 0.05em 0.14em rgba(255, 255, 255, 0.55),
+    inset -0.16em -0.16em 0.3em rgba(60, 52, 34, 0.4),
+    inset 0.05em 0.05em 0.14em rgba(255, 255, 255, 0.25),
     0 0 0 1px rgba(0, 0, 0, 0.06);
   --moon-crater-1: rgba(120, 108, 86, 0.55);
   --moon-crater-2: rgba(120, 108, 86, 0.40);
   --moon-crater-3: rgba(120, 108, 86, 0.50);
   --moon-crater-4: rgba(120, 108, 86, 0.32);
   --moon-crater-5: rgba(120, 108, 86, 0.35);
-  --moon-shading: 
-    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.45), transparent 42%),
+  --moon-shading:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.20), transparent 42%),
     radial-gradient(circle at 76% 80%, rgba(38, 30, 16, 0.50), transparent 55%);
+  --moon-limb: rgba(74, 60, 36, 0.30);
+  --moon-limb-2: rgba(52, 42, 24, 0.52);
 }
 
 /* Scrolling crater surface -> continuous axial spin (GPU transform) */
@@ -715,7 +719,11 @@ ul { list-style: none; padding: 0; }
     radial-gradient(circle at 30% 22%, var(--moon-crater-2) 0 3.5%, transparent 4.5%),
     radial-gradient(circle at 38% 66%, var(--moon-crater-3) 0 5%, transparent 6%),
     radial-gradient(circle at 46% 38%, var(--moon-crater-4) 0 2.5%, transparent 3.5%),
-    radial-gradient(circle at 22% 82%, var(--moon-crater-5) 0 3%, transparent 4%);
+    radial-gradient(circle at 22% 82%, var(--moon-crater-5) 0 3%, transparent 4%),
+    radial-gradient(circle at 65% 30%, var(--moon-crater-1) 0 4.5%, transparent 5.5%),
+    radial-gradient(circle at 80% 55%, var(--moon-crater-2) 0 6.5%, transparent 7.5%),
+    radial-gradient(circle at 58% 75%, var(--moon-crater-3) 0 3%, transparent 4%),
+    radial-gradient(circle at 88% 20%, var(--moon-crater-4) 0 4%, transparent 5%);
   background-size: 50% 50%;
   background-repeat: repeat;
   animation: moonroll 9s linear infinite;
@@ -725,7 +733,12 @@ ul { list-style: none; padding: 0; }
 .moon::after {
   content: '';
   position: absolute; inset: 0; border-radius: 50%;
-  background: var(--moon-shading);
+  /* Limb (edge) darkening on top gives the 3D sphere read: surface
+     features fade around the rim as they "rotate" away from view. */
+  background:
+    radial-gradient(circle at 50% 50%, transparent 50%,
+      var(--moon-limb, rgba(0, 0, 0, 0.5)) 86%, var(--moon-limb-2, rgba(0, 0, 0, 0.72)) 100%),
+    var(--moon-shading);
   pointer-events: none;
   transition: background var(--dur) var(--ease);
 }
