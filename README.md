@@ -1,4 +1,4 @@
-# Luna — Storefront
+# Luno — Storefront
 
 A modern, responsive fashion e-commerce storefront. The layout, architecture,
 color system, and interaction patterns follow a premium monochrome apparel
