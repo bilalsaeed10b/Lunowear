@@ -349,6 +349,14 @@
     renderWishlist();
   });
 
+  /* ---------- Interaction Restrictions ---------- */
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
+  document.addEventListener('dragstart', (e) => {
+    if (e.target.tagName === 'IMG' || e.target.tagName === 'A' || e.target.closest('a')) {
+      e.preventDefault();
+    }
+  });
+
   /* ---------- Boot ---------- */
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
   else mount();
