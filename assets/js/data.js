@@ -19,10 +19,10 @@
     sand: { name: 'Sand', hex: '#d9cbb0' },
   };
 
-  const SIZES_TOP = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-  const SIZES_BOTTOM = ['28', '30', '32', '34', '36', '38'];
-  const SIZES_SHOE = ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'];
-  const SIZES_ONE = ['One Size'];
+  const SIZES_TOP = ['S', 'M', 'L', 'XL', 'XXL'];
+  const SIZES_BOTTOM = ['S', 'M', 'L', 'XL', 'XXL'];
+  const SIZES_SHOE = ['S', 'M', 'L', 'XL', 'XXL'];
+  const SIZES_ONE = ['S', 'M', 'L', 'XL', 'XXL'];
 
   // name, category slug, fit, dept, price, compareAt(optional), colors, sizes, badge
   const RAW = [
