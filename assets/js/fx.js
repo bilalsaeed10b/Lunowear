@@ -263,7 +263,8 @@
         if (py > 0.5) py = 0.5; if (py < -0.5) py = -0.5;
         var tiltX = (-py * 15).toFixed(2);
         var tiltY = (px * 18).toFixed(2);
-        hoveredMoon.style.transform = 'perspective(200px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) scale(1.08)';
+        var pre = hoveredMoon.classList.contains('moon--o') ? 'translate(-50%,-50%) ' : '';
+        hoveredMoon.style.transform = pre + 'perspective(200px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) scale(1.08)';
       } else if (draggedMoon) {
         var rect = draggedMoon.getBoundingClientRect();
         var px = (e.clientX - rect.left) / rect.width - 0.5;
@@ -272,7 +273,8 @@
         if (py > 0.5) py = 0.5; if (py < -0.5) py = -0.5;
         var tiltX = (-py * 15).toFixed(2);
         var tiltY = (px * 18).toFixed(2);
-        draggedMoon.style.transform = 'perspective(200px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) scale(1.08)';
+        var pre = draggedMoon.classList.contains('moon--o') ? 'translate(-50%,-50%) ' : '';
+        draggedMoon.style.transform = pre + 'perspective(200px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) scale(1.08)';
       }
     });
 
@@ -316,7 +318,7 @@
           moon.isHovered = false;
           moon.classList.remove('is-tilting');
           if (!moon.isDragging) {
-            moon.style.transform = '';
+            moon.style.transform = moon.classList.contains('moon--o') ? 'translate(-50%,-50%)' : '';
             moon.classList.remove('is-interacting');
           }
         }

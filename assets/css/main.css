@@ -107,6 +107,7 @@ ul { list-style: none; padding: 0; }
 .header--overlay .search { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.35); color: var(--on-dark); }
 .header--overlay .search input::placeholder { color: rgba(245,245,244,0.75); }
 .header--overlay .search__icon { color: var(--on-dark); }
+.header--overlay .logo__o { border-color: var(--on-dark); }
 
 .logo {
   font-family: var(--font-logo);
@@ -118,7 +119,34 @@ ul { list-style: none; padding: 0; }
   align-items: center;
 }
 .logo__word { display: inline-flex; align-items: center; letter-spacing: 0.03em; }
-.logo__word .moon--o { width: 0.8em; height: 0.8em; margin-left: 0.05em; vertical-align: middle; }
+.logo__o {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.82em;
+  height: 0.82em;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  margin-left: 0.03em;
+  vertical-align: middle;
+}
+.logo__o > span:last-child { /* hide the actual "O" glyph */
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
+.logo__o .moon--o {
+  position: absolute;
+  width: 72%;
+  height: 72%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
 
 /* Nav */
 .nav { display: flex; gap: 2.25rem; }
@@ -776,7 +804,8 @@ ul { list-style: none; padding: 0; }
 }
 /* Hidden until the display font is ready (prevents a fallback-font flash) */
 .loader.fonts-loaded .loader__lun { animation: loaderLun 1.7s var(--ease) both; }
-.loader.fonts-loaded .loader__moon { width: 0.82em; height: 0.82em; margin-left: 0.05em; animation: loaderMoon 1.7s var(--ease) both; }
+.loader.fonts-loaded .loader__o { animation: loaderMoon 1.7s var(--ease) both; }
+.loader__o.logo__o { border-width: 4px; }
 /* LUN starts left-of-centre and slides in toward the O */
 @keyframes loaderLun {
   0%   { opacity: 0; transform: translateX(-1em); }
@@ -792,7 +821,7 @@ ul { list-style: none; padding: 0; }
 @media (prefers-reduced-motion: reduce) {
   .moon::before { animation: none; }
   .loader.fonts-loaded .loader__lun, 
-  .loader.fonts-loaded .loader__moon { animation-duration: 0.4s; }
+  .loader.fonts-loaded .loader__o { animation-duration: 0.4s; }
 }
 
 /* Decorative brand moon in the footer */
