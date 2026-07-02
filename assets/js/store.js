@@ -58,6 +58,12 @@
       emit();
     },
 
+    clearCart() {
+      state.cart.length = 0;
+      write(CART_KEY, state.cart);
+      emit();
+    },
+
     isWished(id) { return state.wishlist.includes(id); },
 
     toggleWish(id) {
@@ -72,4 +78,70 @@
 
   window.LUNA = window.LUNA || {};
   window.LUNA.Store = Store;
+
+  /* ---------- Account sync: saved cart + wishlist ----------
+     When signed in, the bag/wishlist live in the `carts` table
+     (one row per user, guarded by RLS) and follow the customer
+     across devices. Local storage stays the source while guest. */
+  let remoteLoaded = false;
+  let pushTimer;
+
+  async function pullRemote(user) {
+    const sb = window.LUNA.sb;
+    if (!sb || !user) return;
+    try {
+      const { data } = await sb.from('carts').select('items, wishlist').eq('user_id', user.id).maybeSingle();
+      if (data) {
+        if (!state.cart.length && Array.isArray(data.items) && data.items.length) {
+          state.cart.push(...data.items);
+          write(CART_KEY, state.cart);
+        }
+        if (!state.wishlist.length && Array.isArray(data.wishlist) && data.wishlist.length) {
+          state.wishlist.push(...data.wishlist);
+          write(WISH_KEY, state.wishlist);
+        }
+      }
+      remoteLoaded = true;
+      emit();
+    } catch (e) {
+      console.warn('Luna: cart sync failed', e);
+    }
+  }
+
+  function pushRemote() {
+    const sb = window.LUNA.sb;
+    const user = window.LUNA.user;
+    if (!sb || !user || !remoteLoaded) return;
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(() => {
+      sb.from('carts').upsert({
+        user_id: user.id,
+        items: state.cart,
+        wishlist: state.wishlist,
+        updated_at: new Date().toISOString(),
+      }).then(({ error }) => { if (error) console.warn('Luna: cart save failed', error.message); });
+    }, 700);
+  }
+
+  window.addEventListener('luna:auth', (e) => {
+    if (e.detail) pullRemote(e.detail);
+    else remoteLoaded = false;
+  });
+  window.addEventListener('luna:change', pushRemote);
+
+  // Drop bag/wishlist entries whose product no longer exists in the
+  // catalog (e.g. deleted in the admin panel). Only when the catalog
+  // actually loaded — never wipe the bag on a network failure.
+  if (window.LUNA.ready) window.LUNA.ready.then(() => {
+    if (!window.LUNA.live || !window.LUNA.products.length) return;
+    const known = (id) => !!window.LUNA.getProduct(id);
+    const cartLen = state.cart.length, wishLen = state.wishlist.length;
+    for (let i = state.cart.length - 1; i >= 0; i--) if (!known(state.cart[i].id)) state.cart.splice(i, 1);
+    for (let i = state.wishlist.length - 1; i >= 0; i--) if (!known(state.wishlist[i])) state.wishlist.splice(i, 1);
+    if (cartLen !== state.cart.length || wishLen !== state.wishlist.length) {
+      write(CART_KEY, state.cart);
+      write(WISH_KEY, state.wishlist);
+      emit();
+    }
+  });
 })();

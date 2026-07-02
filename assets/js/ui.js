@@ -275,7 +275,7 @@
     foot.innerHTML = `
       <div class="drawer__row total"><span>Subtotal</span><span>${formatPrice(Store.subtotal())}</span></div>
       <p style="color:var(--ink-2);font-size:var(--fs-xs);margin-bottom:1rem">Shipping & taxes calculated at checkout.</p>
-      <button class="btn btn--block btn--lg" onclick="LUNA.toast('Checkout is a demo in this build')">Checkout</button>`;
+      <a class="btn btn--block btn--lg" href="checkout.html">Checkout</a>`;
   }
 
   /* ---------- Wishlist render ---------- */

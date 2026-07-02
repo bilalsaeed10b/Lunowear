@@ -2,7 +2,7 @@
    Luno — Homepage behaviour: hero slider + feature grids (FEAR-style)
    ============================================================ */
 (function () {
-  const { products, fearCardHTML } = window.LUNA;
+  const { products } = window.LUNA;
 
   /* ---------- Hero slider ---------- */
   function initHero() {
@@ -22,7 +22,7 @@
 
   function fill(selector, list) {
     const el = document.querySelector(selector);
-    if (el) el.innerHTML = list.map(fearCardHTML).join('');
+    if (el) el.innerHTML = list.map(window.LUNA.fearCardHTML).join('');
   }
 
   function boot() {
@@ -35,6 +35,5 @@
     fill('[data-best]', best);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
-  else boot();
+  window.LUNA.onReady(boot);
 })();

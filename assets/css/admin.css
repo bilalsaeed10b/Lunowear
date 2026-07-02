@@ -1,0 +1,221 @@
+/* ============================================================
+   Luno Admin — panel styles (uses tokens.css variables)
+   ============================================================ */
+* { box-sizing: border-box; }
+/* Some rules below set display on containers; make sure the
+   hidden attribute always wins so views never stack. */
+[hidden] { display: none !important; }
+
+body.adm {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--ink, #111);
+  background: #f3f4f6;
+  font-size: 14px;
+}
+.adm-logo { font-family: 'Archivo', sans-serif; font-weight: 900; letter-spacing: .04em; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: .55rem; }
+.adm-logo span { color: #8a8f98; font-weight: 600; }
+
+/* ---------- 3D rotating moon (standalone copy of the brand moon) ---------- */
+.moon {
+  position: relative; display: inline-block; border-radius: 50%; overflow: hidden;
+  vertical-align: middle; user-select: none;
+  --moon-bg: radial-gradient(circle at 32% 30%, #565b64 0%, #353a42 40%, #1c2026 72%, #0e1014 100%);
+  --moon-crater-1: rgba(255,255,255,.26); --moon-crater-2: rgba(255,255,255,.18);
+  --moon-crater-3: rgba(255,255,255,.22); --moon-crater-4: rgba(255,255,255,.14);
+  --moon-crater-5: rgba(255,255,255,.16);
+  --moon-shading: radial-gradient(circle at 30% 26%, rgba(255,255,255,.14), transparent 42%),
+                  radial-gradient(circle at 76% 80%, rgba(0,0,0,.55), transparent 55%);
+  --moon-limb: rgba(0,0,0,.5); --moon-limb-2: rgba(0,0,0,.72);
+  background: var(--moon-bg);
+  box-shadow: inset -0.16em -0.16em 0.3em rgba(0,0,0,.85),
+              inset 0.05em 0.05em 0.14em rgba(255,255,255,.07);
+}
+.moon--sand {
+  --moon-bg: radial-gradient(circle at 32% 30%, #ffffff 0%, #f4eee3 40%, #dfd5be 72%, #c3b8a1 100%);
+  --moon-crater-1: rgba(120,108,86,.55); --moon-crater-2: rgba(120,108,86,.40);
+  --moon-crater-3: rgba(120,108,86,.50); --moon-crater-4: rgba(120,108,86,.32);
+  --moon-crater-5: rgba(120,108,86,.35);
+  --moon-shading: radial-gradient(circle at 30% 26%, rgba(255,255,255,.20), transparent 42%),
+                  radial-gradient(circle at 76% 80%, rgba(38,30,16,.50), transparent 55%);
+  --moon-limb: rgba(74,60,36,.30); --moon-limb-2: rgba(52,42,24,.52);
+  box-shadow: inset -0.16em -0.16em 0.3em rgba(60,52,34,.4),
+              inset 0.05em 0.05em 0.14em rgba(255,255,255,.25);
+}
+.moon::before {
+  content: '';
+  position: absolute; top: 0; left: 0; height: 200%; width: 200%;
+  background-image:
+    radial-gradient(circle at 12% 42%, var(--moon-crater-1) 0 6%, transparent 7%),
+    radial-gradient(circle at 30% 22%, var(--moon-crater-2) 0 3.5%, transparent 4.5%),
+    radial-gradient(circle at 38% 66%, var(--moon-crater-3) 0 5%, transparent 6%),
+    radial-gradient(circle at 46% 38%, var(--moon-crater-4) 0 2.5%, transparent 3.5%),
+    radial-gradient(circle at 22% 82%, var(--moon-crater-5) 0 3%, transparent 4%),
+    radial-gradient(circle at 65% 30%, var(--moon-crater-1) 0 4.5%, transparent 5.5%),
+    radial-gradient(circle at 80% 55%, var(--moon-crater-2) 0 6.5%, transparent 7.5%),
+    radial-gradient(circle at 58% 75%, var(--moon-crater-3) 0 3%, transparent 4%),
+    radial-gradient(circle at 88% 20%, var(--moon-crater-4) 0 4%, transparent 5%);
+  background-size: 50% 50%;
+  background-repeat: repeat;
+  animation: moonroll 9s linear infinite;
+}
+.moon::after {
+  content: '';
+  position: absolute; inset: 0; border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 50%, var(--moon-limb) 86%, var(--moon-limb-2) 100%),
+    var(--moon-shading);
+  pointer-events: none;
+}
+@keyframes moonroll { to { transform: translate(-50%, 0); } }
+.moon--float { animation: moonfloat 7s ease-in-out infinite; }
+@keyframes moonfloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+@media (prefers-reduced-motion: reduce) { .moon::before, .moon--float { animation: none; } }
+
+/* ---------- buttons / inputs ---------- */
+.adm-btn {
+  font: inherit; font-weight: 600; cursor: pointer;
+  background: #111; color: #fff; border: 1px solid #111;
+  padding: .55rem 1rem;
+}
+.adm-btn:hover { opacity: .85; }
+.adm-btn:disabled { opacity: .5; cursor: default; }
+.adm-btn--ghost { background: #fff; color: #111; border-color: #ccc; }
+.adm-btn--block { width: 100%; padding: .8rem; }
+.adm-btn--danger { background: #fff; color: #c0392b; border-color: #e5b7b0; }
+input, select, textarea { font: inherit; }
+.adm input:not([type=checkbox]):not([type=color]), .adm select, .adm textarea {
+  width: 100%; border: 1px solid #ccc; background: #fff; padding: .55rem .7rem;
+}
+.adm label { display: block; font-weight: 600; }
+.adm label input, .adm label select, .adm label textarea { margin-top: .3rem; font-weight: 400; }
+.adm-error { color: #c0392b; margin: .8rem 0 0; }
+.adm-hint { color: #888; font-size: .8rem; }
+.adm-label { font-weight: 600; display: block; margin-bottom: .4rem; }
+
+/* ---------- login: dark stage, floating moons, white card ---------- */
+.adm-login {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 120%, #23262e 0%, #14161b 45%, #0b0d11 100%);
+  position: relative; overflow: hidden;
+}
+.adm-login .adm-moon { position: absolute; pointer-events: none; }
+.adm-login .adm-moon--left { left: clamp(1.5rem, 10vw, 12rem); top: calc(50% - 260px); width: 150px; height: 150px; }
+.adm-login .adm-moon--right { right: clamp(1.5rem, 10vw, 12rem); top: calc(50% + 60px); width: 105px; height: 105px; }
+.adm-login .adm-moon--right .moon { animation-delay: -3.5s; }
+@media (max-width: 900px) { .adm-login .adm-moon { display: none; } }
+.adm-login__card {
+  background: #fff; padding: 2.6rem 2.4rem; width: 380px; max-width: 92vw;
+  box-shadow: 0 30px 80px rgba(0,0,0,.5); position: relative; z-index: 1;
+}
+.adm-login__card .adm-logo { justify-content: center; margin-bottom: 1.8rem; font-size: 1.3rem; }
+.adm-login__card form { display: flex; flex-direction: column; gap: 1rem; }
+.adm-login__foot { text-align: center; margin-top: 1.6rem; font-size: .85rem; color: #888; }
+.adm-login__foot a { color: #111; font-weight: 600; }
+.adm-setup { background: #fff8e6; border: 1px solid #eeddaa; padding: 1rem; margin-bottom: 1.2rem; font-size: .85rem; line-height: 1.5; }
+.adm-setup code { background: #f2ecd8; padding: 0 .3em; }
+
+/* ---------- top bar (dark) ---------- */
+.adm-top {
+  display: flex; align-items: center; gap: 2rem;
+  background: #101216; color: #fff;
+  padding: .7rem 1.6rem; position: sticky; top: 0; z-index: 5;
+}
+.adm-top .adm-logo span { color: #7d828c; }
+.adm-nav { display: flex; gap: .3rem; flex: 1; }
+.adm-nav button {
+  font: inherit; font-weight: 600; cursor: pointer;
+  background: none; border: none; padding: .6rem 1rem; color: #8a8f98;
+  border-bottom: 2px solid transparent;
+}
+.adm-nav button:hover { color: #d6d9de; }
+.adm-nav button.is-active { color: #fff; border-bottom-color: #fff; }
+.adm-top__right { display: flex; align-items: center; gap: 1rem; color: #8a8f98; font-size: .85rem; }
+.adm-top__right a { color: #fff; text-decoration: none; font-weight: 600; }
+.adm-top .adm-btn--ghost { background: transparent; color: #d6d9de; border-color: #3a3f47; }
+.adm-top .adm-btn--ghost:hover { border-color: #d6d9de; opacity: 1; }
+@media (max-width: 760px) { .adm-top { flex-wrap: wrap; gap: .8rem 1.2rem; } }
+
+/* ---------- panels / tables ---------- */
+.adm-main { padding: 1.8rem 1.6rem; max-width: 1200px; margin: 0 auto; }
+.adm-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.1rem; flex-wrap: wrap; }
+.adm-panel-head h2 { margin: 0; font-family: 'Archivo', sans-serif; text-transform: uppercase; letter-spacing: .02em; }
+.adm-panel-head > div { display: flex; gap: .6rem; align-items: center; }
+.adm-count { color: #999; font-weight: 400; font-size: .9rem; }
+.adm-search { width: 220px !important; }
+.adm-select { width: auto !important; }
+.adm-inline-form { display: flex; gap: .6rem; }
+.adm-inline-form input { width: 220px !important; }
+
+.adm-table-wrap { background: #fff; border: 1px solid #e5e7ea; box-shadow: 0 1px 3px rgba(16,18,22,.05); overflow-x: auto; }
+.adm-table { width: 100%; border-collapse: collapse; }
+.adm-table th {
+  text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
+  color: #888; padding: .7rem .9rem; border-bottom: 1px solid #e5e7ea; white-space: nowrap; background: #fafbfc;
+}
+.adm-table td { padding: .6rem .9rem; border-bottom: 1px solid #f0f1f3; vertical-align: middle; }
+.adm-table tr:last-child td { border-bottom: none; }
+.adm-table tbody tr:hover td, .adm-table tr:hover td { background: #fafbfc; }
+.adm-thumb { width: 42px; height: 54px; object-fit: cover; background: #eee; display: block; }
+.adm-actions { display: flex; gap: .4rem; justify-content: flex-end; }
+.adm-actions .adm-btn { padding: .35rem .7rem; font-size: .8rem; }
+.adm-tag { display: inline-block; font-size: .7rem; font-weight: 700; text-transform: uppercase; padding: .15rem .5rem; background: #eee; }
+.adm-tag--sale { background: #fde8e6; color: #c0392b; }
+.adm-tag--new { background: #e6f2fd; color: #21618c; }
+.adm-tag--off { background: #f3f3f3; color: #999; }
+
+/* status colors */
+.adm-status { width: auto !important; font-weight: 600; }
+.adm-status--pending { border-color: #d8b64a !important; color: #9c7c10; }
+.adm-status--confirmed { border-color: #5aa0d8 !important; color: #21618c; }
+.adm-status--shipped { border-color: #9b7fd4 !important; color: #5e3fa8; }
+.adm-status--delivered { border-color: #58b368 !important; color: #1e7a2e; }
+.adm-status--cancelled { border-color: #d87a6a !important; color: #c0392b; }
+
+.adm-order-detail { background: #fafafa; }
+.adm-order-detail .inner { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; padding: .6rem .4rem; }
+.adm-order-item { display: flex; gap: .7rem; align-items: center; padding: .4rem 0; border-bottom: 1px solid #eee; }
+.adm-order-item img { width: 38px; height: 48px; object-fit: cover; }
+@media (max-width: 720px) { .adm-order-detail .inner { grid-template-columns: 1fr; } }
+
+/* ---------- product editor dialog ---------- */
+.adm-dialog { border: none; padding: 0; width: min(720px, 94vw); max-height: 92vh; }
+.adm-dialog::backdrop { background: rgba(10,12,16,.55); }
+.adm-editor { display: flex; flex-direction: column; max-height: 92vh; }
+.adm-editor__head, .adm-editor__foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.4rem; background: #fff; position: sticky;
+}
+.adm-editor__head { border-bottom: 1px solid #e5e7ea; top: 0; }
+.adm-editor__head h3 { margin: 0; font-family: 'Archivo', sans-serif; }
+.adm-editor__foot { border-top: 1px solid #e5e7ea; bottom: 0; gap: .6rem; justify-content: flex-end; }
+.adm-editor__grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  padding: 1.4rem; overflow-y: auto;
+}
+.adm-editor__grid .span2 { grid-column: 1 / -1; }
+.adm-check { display: flex !important; align-items: center; gap: .5rem; }
+.adm-check input { width: auto !important; }
+@media (max-width: 620px) { .adm-editor__grid { grid-template-columns: 1fr; } }
+
+.adm-color-row { display: flex; gap: .6rem; align-items: center; margin-bottom: .5rem; }
+.adm-color-row input[type=color] { width: 44px; height: 36px; padding: 2px; border: 1px solid #ccc; background: #fff; }
+.adm-color-row input[type=text] { flex: 1; }
+
+.adm-images { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: .6rem; }
+.adm-img { position: relative; width: 74px; }
+.adm-img img { width: 74px; height: 96px; object-fit: cover; border: 1px solid #ddd; display: block; }
+.adm-img button {
+  position: absolute; top: -7px; right: -7px; width: 20px; height: 20px;
+  border-radius: 50%; border: none; background: #111; color: #fff;
+  font-size: 11px; line-height: 1; cursor: pointer;
+}
+.adm-img .main-tag { position: absolute; bottom: 3px; left: 3px; right: 3px; text-align: center; background: rgba(0,0,0,.65); color: #fff; font-size: .6rem; padding: 1px 0; text-transform: uppercase; }
+
+/* ---------- toast ---------- */
+.adm-toast {
+  position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #111; color: #fff; padding: .7rem 1.4rem; font-weight: 600;
+  opacity: 0; pointer-events: none; transition: all .25s ease; z-index: 50;
+}
+.adm-toast.is-open { opacity: 1; transform: translateX(-50%) translateY(0); }

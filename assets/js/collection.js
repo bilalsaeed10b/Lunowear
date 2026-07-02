@@ -103,6 +103,5 @@
     wire();
     renderAll();
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
-  else boot();
+  window.LUNA.onReady(boot);
 })();

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Order — Luno</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <style>
+    .tr-form input { width: 100%; border: 1px solid var(--line-2); padding: 1rem; font: inherit; }
+    .tr-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: .4rem; margin: 2rem 0; }
+    .tr-step { text-align: center; padding-top: .9rem; border-top: 3px solid var(--line-2); color: var(--ink-3); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .06em; }
+    .tr-step.is-done { border-top-color: var(--ink); color: var(--ink); font-weight: 700; }
+    .tr-cancel { border: 1px solid var(--sale); color: var(--sale); padding: 1rem; text-align: center; margin: 2rem 0; }
+    .tr-line { display: flex; gap: .8rem; align-items: center; padding: .7rem 0; border-bottom: 1px solid var(--line-2); }
+    .tr-line img { width: 52px; height: 68px; object-fit: cover; }
+    .tr-line small { color: var(--ink-2); display: block; }
+    .tr-total { display: flex; justify-content: space-between; font-weight: 700; padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="loader" id="luno-loader"></div>
+  <div data-slot="header"></div>
+
+  <main class="container section" style="max-width:640px" data-track>
+    <h1 class="sec-title" style="text-align:center;margin-bottom:.5rem">Track Your Order</h1>
+    <p style="text-align:center;color:var(--ink-2);margin-bottom:2rem">Enter your order number and the email you ordered with.</p>
+    <form class="tr-form" data-tr-form style="display:flex;flex-direction:column;gap:1rem">
+      <div><label class="pdp__label">Order Number</label><input name="order" required placeholder="LW-XXXXXXXX" /></div>
+      <div><label class="pdp__label">Email</label><input name="email" type="email" required placeholder="you@example.com" /></div>
+      <button class="btn btn--block btn--lg" type="submit" data-tr-submit>Track Order</button>
+      <p data-tr-error style="color:var(--sale);display:none"></p>
+    </form>
+    <div data-tr-result></div>
+  </main>
+
+  <div data-slot="footer"></div>
+
+  <script src="assets/js/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/footer.js"></script>
+  <script src="assets/js/track.js"></script>
+  <script src="assets/js/fx.js"></script>
+</body>
+</html>

@@ -1,12 +1,19 @@
 /* ============================================================
    Luna — Product detail page
    ============================================================ */
-(function () {
+window.LUNA.onReady(function () {
   const { products, getProduct, formatPrice, productCardHTML, Store, I } = window.LUNA;
   const id = new URLSearchParams(location.search).get('id');
   const p = getProduct(id) || products[0];
   const root = document.querySelector('[data-pdp]');
   if (!root) return;
+  if (!p) {
+    root.innerHTML = `<div class="empty-note" style="text-align:center;padding:4rem 1rem">
+      <h1 class="sec-title">Product not found</h1>
+      <p style="color:var(--ink-2);margin:1rem 0 2rem">It may have been removed or the store is still being set up.</p>
+      <a class="btn btn--lg" href="collection.html?c=all&dept=men">Browse Collection</a></div>`;
+    return;
+  }
 
   const sel = { color: p.colors[0].name, size: null };
 
@@ -49,7 +56,7 @@
         </div>
 
         <div class="accordion">
-          ${accordion('Description', `A wardrobe staple reimagined. The ${p.name.toLowerCase()} is cut for a ${p.fit.toLowerCase()} and finished with premium, durable fabrication for everyday wear.`)}
+          ${accordion('Description', p.description || `A wardrobe staple reimagined. The ${p.name.toLowerCase()} is cut for a ${p.fit.toLowerCase()} and finished with premium, durable fabrication for everyday wear.`)}
           ${accordion('Material & Care', 'Premium cotton-blend. Machine wash cold, tumble dry low, do not bleach. Iron on reverse if needed.')}
           ${accordion('Delivery & Returns', 'Free standard delivery on orders over PKR 3,500. Easy 14-day returns on unworn items with tags attached.')}
         </div>
@@ -122,4 +129,4 @@
   root.querySelector('[data-related]').innerHTML = related.map(productCardHTML).join('');
 
   document.title = `${p.name} — Luno`;
-})();
+});
