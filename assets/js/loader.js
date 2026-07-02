@@ -11,7 +11,10 @@
   el.innerHTML =
     '<div class="loader__logo">' +
       '<span class="loader__lun">LUN</span>' +
-      '<span class="moon loader__moon" aria-hidden="true"></span>' +
+      '<span class="logo__o loader__o">' +
+        '<span class="moon loader__moon moon--o" aria-hidden="true"></span>' +
+        '<span>O</span>' +
+      '</span>' +
     '</div>';
 
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

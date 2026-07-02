@@ -38,7 +38,7 @@
 
   /* ---------- Luno wordmark: the O is a round 3D rotating moon ---------- */
   function logoHTML() {
-    return `<span class="logo__word">LUN<span class="moon moon--o" aria-hidden="true"></span></span>`;
+    return `<span class="logo__word">LUN<span class="logo__o"><span class="moon moon--o" aria-hidden="true"></span><span>O</span></span></span>`;
   }
   window.LUNA.logoHTML = logoHTML;
 
