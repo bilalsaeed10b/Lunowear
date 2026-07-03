@@ -40,7 +40,7 @@
           <h5>Company</h5>
           <a href="about.html">About Luno</a>
           <a href="#">Stores</a>
-          <a href="#">Careers</a>
+          <a href="why-choose-us.html">Why Choose Us</a>
           <a href="#">Privacy Policy</a>
           <a href="#">Terms &amp; Conditions</a>
         </div>

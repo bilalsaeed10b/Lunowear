@@ -1000,3 +1000,34 @@ ul { list-style: none; padding: 0; }
   .wa-fab:hover { width: 50px; }
   .wa-fab__label { display: none; }
 }
+
+/* ---------- Category Navigation ---------- */
+.cat-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin: 3rem 0 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+.cat-nav__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  min-width: 140px;
+}
+.cat-nav__btn svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+@media (max-width: 620px) {
+  .cat-nav {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .cat-nav__btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

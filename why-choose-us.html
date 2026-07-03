@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Why Choose Us — Luno</title>
+  <meta name="description" content="Why Luno — premium Chinese fabrics, meticulous construction, and high-end streetwear built to last." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <style>
+    /* Contain any horizontal spill (off-canvas drawers, reveal transforms).
+       `clip` on the X axis kills sideways scroll without breaking the
+       sticky header (unlike `hidden`, clip keeps the Y axis a scroll root). */
+    html { overflow-x: clip; }
+    main { overflow-x: clip; }
+
+    .wcu-lede { max-width: 720px; margin: 0 auto; text-align: center; padding-top: clamp(8px, 2vw, 16px); }
+    .wcu-lede p { color: var(--ink-2); font-size: var(--fs-md); line-height: 1.6; }
+
+    .wcu-reasons { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .wcu-reason { background: var(--bg); padding: clamp(26px, 4vw, 44px); }
+    .wcu-reason__num {
+      font-family: var(--font-display); font-weight: 800; font-size: var(--fs-xs);
+      color: var(--ink-3); letter-spacing: var(--tracking-wide);
+    }
+    .wcu-reason h3 {
+      font-family: var(--font-display); font-weight: 800; text-transform: uppercase;
+      font-size: var(--fs-lg); margin: 0.6rem 0 0.8rem; line-height: 1.05;
+    }
+    .wcu-reason p { color: var(--ink-2); }
+
+    .wcu-quote { background: var(--bg-dark); color: var(--on-dark); text-align: center; padding: clamp(56px, 9vw, 108px) var(--gutter); }
+    .wcu-quote blockquote {
+      max-width: 780px; margin: 0 auto; font-family: var(--font-display); font-weight: 600;
+      font-size: clamp(1.4rem, 3.4vw, 2.4rem); line-height: 1.3; letter-spacing: -0.01em;
+    }
+    .wcu-quote cite { display: block; margin-top: 1.6rem; font-style: normal; font-size: var(--fs-sm); color: rgba(245,245,244,0.6); }
+
+    /* CTA band — force the heading + copy centered regardless of context */
+    .wcu-cta .lookbook__content { text-align: center; margin-inline: auto; }
+    .wcu-cta .lookbook__title { text-align: center; }
+
+    /* ---- Small screens ---- */
+    @media (max-width: 720px) {
+      .wcu-reasons { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .wcu-quote blockquote { font-size: clamp(1.25rem, 6vw, 1.7rem); }
+      .wcu-reason { padding: 26px 22px; }
+      .wcu-lede p { font-size: var(--fs-sm); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader" id="luno-loader"></div>
+  <div data-slot="header"></div>
+
+  <main>
+    <!-- Page hero with floating 3D moon -->
+    <section class="page-hero">
+      <div class="page-hero__inner">
+        <span class="moon moon--float" aria-hidden="true"></span>
+        <p class="eyebrow" style="margin-top:1.6rem">Why Luno</p>
+        <h1 class="page-hero__title">Why Choose Luno?</h1>
+        <p class="page-hero__sub">At Luno, we craft premium streetwear that stands apart.</p>
+      </div>
+    </section>
+
+    <!-- Lede -->
+    <section class="section container" style="padding-top:clamp(8px,2vw,16px);padding-bottom:0">
+      <div class="wcu-lede">
+        <p>We source superior Chinese fabrics — premium Terry, Double Jersey, and Lycra —
+          to create garments that deliver exceptional softness, structure, and lasting
+          quality. Every tee, polo, and streetwear piece is designed with meticulous
+          attention to detail and superior construction.</p>
+      </div>
+    </section>
+
+    <!-- Reasons grid -->
+    <section class="section container" style="padding-bottom:0">
+      <div class="sec-head"><h2 class="sec-title">What Sets Us Apart</h2></div>
+      <div class="wcu-reasons">
+        <div class="wcu-reason">
+          <span class="wcu-reason__num">01</span>
+          <h3>Premium Fabrics</h3>
+          <p>Superior Chinese fabrics — premium Terry, Double Jersey, and Lycra — for
+            garments that deliver exceptional softness, structure, and lasting quality.</p>
+        </div>
+        <div class="wcu-reason">
+          <span class="wcu-reason__num">02</span>
+          <h3>Superior Construction</h3>
+          <p>Every tee, polo, and streetwear piece is designed with meticulous attention
+            to detail and superior construction.</p>
+        </div>
+        <div class="wcu-reason">
+          <span class="wcu-reason__num">03</span>
+          <h3>Street Meets Refined</h3>
+          <p>Our collections blend contemporary street aesthetics with refined tailoring —
+            bold graphic tees, elevated polos, and versatile everyday pieces that move
+            seamlessly from the streets to refined settings.</p>
+        </div>
+        <div class="wcu-reason">
+          <span class="wcu-reason__num">04</span>
+          <h3>Value That Respects You</h3>
+          <p>By combining premium materials with thoughtful design, Luno delivers high-end
+            streetwear at a value that respects your standards.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pull quote -->
+    <section class="wcu-quote" data-reveal style="margin-top:0; padding-top:clamp(28px,4.5vw,54px)">
+      <blockquote>
+        "We believe true luxury lies in the details — rich fabric hand-feel, precise fits,
+        vibrant prints that endure, and silhouettes that flatter without compromise."
+        <cite>— The Luno Design Team</cite>
+      </blockquote>
+    </section>
+
+    <!-- CTA band -->
+    <section class="lookbook wcu-cta">
+      <img src="https://picsum.photos/seed/luna-wcu-cta/1920/1000" alt="" />
+      <div class="lookbook__content">
+        <p class="eyebrow" style="color:rgba(255,255,255,.85)">See It For Yourself</p>
+        <h2 class="lookbook__title">Wear the Difference</h2>
+        <p class="lookbook__text">Choose Luno for clothing that feels exclusive, wears
+          exceptionally well, and reflects a refined urban identity.</p>
+        <a class="btn btn--light btn--lg" href="collection.html?c=all&dept=men">Shop the Collection</a>
+      </div>
+    </section>
+  </main>
+
+  <div data-slot="footer"></div>
+
+  <script src="assets/js/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/footer.js"></script>
+  <script src="assets/js/fx.js"></script>
+</body>
+</html>

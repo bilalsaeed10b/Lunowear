@@ -2,7 +2,7 @@
    Luna — Collection/listing page: tabs, sort, filter, layout
    ============================================================ */
 (function () {
-  const { products, categories, productCardHTML, esc } = window.LUNA;
+  const { products, categories, productCardHTML, esc, I } = window.LUNA;
   const params = new URLSearchParams(location.search);
 
   const state = {
@@ -22,6 +22,7 @@
     title: document.querySelector('[data-title]'),
     sort: document.querySelector('[data-sort]'),
     layout: document.querySelectorAll('[data-layout]'),
+    catNav: document.querySelector('[data-cat-nav]'),
   };
 
   function currentLabel() {
@@ -82,10 +83,44 @@
     history.replaceState(null, '', `?${p.toString()}`);
   }
 
+  function renderCatNav() {
+    if (!els.catNav) return;
+    const currentIndex = categories.findIndex((c) => c.slug === state.category);
+    if (currentIndex === -1) {
+      els.catNav.innerHTML = '';
+      return;
+    }
+    const prevCat = currentIndex > 0 ? categories[currentIndex - 1] : null;
+    const nextCat = currentIndex < categories.length - 1 ? categories[currentIndex + 1] : null;
+
+    els.catNav.innerHTML = `
+      <button class="btn btn--outline cat-nav__btn cat-nav__btn--prev" data-target="${prevCat ? esc(prevCat.slug) : ''}" ${prevCat ? '' : 'style="visibility:hidden"'}>
+        ${I.chevL} Previous: ${prevCat ? esc(prevCat.label) : ''}
+      </button>
+      <button class="btn btn--outline cat-nav__btn cat-nav__btn--next" data-target="${nextCat ? esc(nextCat.slug) : ''}" ${nextCat ? '' : 'style="visibility:hidden"'}>
+        Next: ${nextCat ? esc(nextCat.label) : ''} ${I.chevR}
+      </button>
+    `;
+
+    els.catNav.querySelectorAll('.cat-nav__btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const slug = btn.dataset.target;
+        if (slug) {
+          state.category = slug;
+          state.query = '';
+          syncURL();
+          renderAll();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
   function renderAll() {
     renderTabs();
     renderHeadings();
     renderGrid();
+    renderCatNav();
   }
 
   function wire() {
