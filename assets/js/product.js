@@ -16,9 +16,10 @@ window.LUNA.onReady(function () {
   }
 
   const sel = { color: p.colors[0].name, size: null };
+  const hasDiscount = p.compareAt && p.compareAt > p.price;
 
   function priceHTML() {
-    return p.compareAt
+    return hasDiscount
       ? `<b>${formatPrice(p.price)}</b><del>${formatPrice(p.compareAt)}</del><span class="off">Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs</span>`
       : `<b>${formatPrice(p.price)}</b>`;
   }
@@ -35,7 +36,9 @@ window.LUNA.onReady(function () {
         <div class="pdp__main"><img src="${esc(p.images[0])}" alt="${esc(p.name)}" data-main-img></div>
       </div>
       <div class="pdp__details">
-        ${p.badge ? `<span class="eyebrow" style="color:var(--sale)">${p.badge === 'sale' ? `Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs` : 'New Arrival'}</span>` : ''}
+        ${hasDiscount
+          ? `<span class="eyebrow" style="color:var(--sale)">Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs</span>`
+          : (p.badge === 'new' ? `<span class="eyebrow" style="color:var(--sale)">New Arrival</span>` : '')}
         <h1 class="pdp__title">${esc(p.name)}</h1>
         <p class="pdp__sub">${esc(p.subtitle)}</p>
         <div class="pdp__price">${priceHTML()}</div>

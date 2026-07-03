@@ -119,10 +119,13 @@
 
   /* ---------- Standard product card (collection / related) ---------- */
   function productCardHTML(p) {
-    const badge = p.badge === 'sale'
+    // A compare-at price above the selling price = on sale (drives the
+    // "Save X rs" badge automatically, regardless of the badge field).
+    const hasDiscount = p.compareAt && p.compareAt > p.price;
+    const badge = hasDiscount
       ? `<span class="prod__badge prod__badge--sale">Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs</span>`
       : p.badge === 'new' ? `<span class="prod__badge">New</span>` : '';
-    const priceHTML = p.compareAt
+    const priceHTML = hasDiscount
       ? `<b>${formatPrice(p.price)}</b><del>${formatPrice(p.compareAt)}</del><span class="off">Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs</span>`
       : `<b>${formatPrice(p.price)}</b>`;
     const wished = Store.isWished(p.id) ? 'is-active' : '';
@@ -148,9 +151,13 @@
   /* ---------- Feature (FEAR-style) card — big card, dots, sold-out
        Kept in the LIGHT theme (grey card, existing images). ---------- */
   function fearCardHTML(p) {
+    const hasDiscount = p.compareAt && p.compareAt > p.price;
     const dots = p.images.slice(0, 4).map((_, i) => `<span class="fdot ${i === 0 ? 'is-active' : ''}"></span>`).join('');
-    const sold = p.soldOut ? `<span class="fcard__sold">Sold Out</span>` : '';
-    const priceHTML = p.compareAt
+    // Top-left corner: sold-out takes priority, otherwise show the discount.
+    const corner = p.soldOut
+      ? `<span class="fcard__sold">Sold Out</span>`
+      : hasDiscount ? `<span class="prod__badge prod__badge--sale">Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs</span>` : '';
+    const priceHTML = hasDiscount
       ? `<b>${formatPrice(p.price)}</b><del>${formatPrice(p.compareAt)}</del>`
       : `<b>${formatPrice(p.price)}</b>`;
     const wished = Store.isWished(p.id) ? 'is-active' : '';
@@ -158,7 +165,7 @@
     return `
     <article class="fcard ${p.soldOut ? 'is-sold' : ''}" data-id="${id}">
       <a class="fcard__media" href="product.html?id=${encodeURIComponent(p.id)}">
-        ${sold}
+        ${corner}
         <img class="fcard__img" src="${esc(p.images[0])}" alt="${esc(p.name)}" loading="lazy" />
         <img class="fcard__img fcard__img--hover" src="${esc(p.images[1] || p.images[0])}" alt="" loading="lazy" />
         <button class="prod__wish ${wished}" data-wish="${id}" aria-label="Add to wishlist" onclick="event.preventDefault();LUNA.onWish(this,'${id}')">${I.heart}</button>

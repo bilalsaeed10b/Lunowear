@@ -138,7 +138,9 @@
         <td><b>${esc(p.name)}</b><br><span class="adm-hint">${esc(p.fit || '')}</span></td>
         <td>${esc(catName(p.category_slug))}</td>
         <td>${money(p.price)}${p.compare_at ? `<br><span class="adm-hint"><s>${money(p.compare_at)}</s></span>` : ''}</td>
-        <td>${p.badge ? `<span class="adm-tag adm-tag--${p.badge}">${p.badge}</span>` : ''}</td>
+        <td>${(p.compare_at && p.compare_at > p.price)
+          ? `<span class="adm-tag adm-tag--sale">Sale</span>`
+          : (p.badge === 'new' ? `<span class="adm-tag adm-tag--new">New</span>` : '')}</td>
         <td>${p.active ? '' : '<span class="adm-tag adm-tag--off">Hidden</span> '}${p.sold_out ? '<span class="adm-tag">Sold out</span>' : ''}</td>
         <td><div class="adm-actions">
           <button class="adm-btn adm-btn--ghost" data-edit="${p.id}">Edit</button>
