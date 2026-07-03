@@ -11,7 +11,8 @@
   <link rel="stylesheet" href="assets/css/main.css" />
   <style>
     .acc-stage { position: relative; min-height: 60vh; }
-    .acc-moon { position: absolute; z-index: 0; pointer-events: none; }
+    .acc-moon { position: absolute; z-index: 0; }
+    .acc-moon .moon { cursor: grab; touch-action: none; }
     .acc-moon--left { left: clamp(1rem, 8vw, 9rem); top: calc(50% - 250px); width: 150px; height: 150px; }
     .acc-moon--right { right: clamp(1rem, 8vw, 9rem); top: calc(50% + 40px); width: 110px; height: 110px; }
     .acc-moon--right .moon { animation-delay: -3.5s; }

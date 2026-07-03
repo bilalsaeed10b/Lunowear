@@ -2,7 +2,7 @@
    Luna — Collection/listing page: tabs, sort, filter, layout
    ============================================================ */
 (function () {
-  const { products, categories, productCardHTML } = window.LUNA;
+  const { products, categories, productCardHTML, esc } = window.LUNA;
   const params = new URLSearchParams(location.search);
 
   const state = {
@@ -48,7 +48,7 @@
 
   function renderTabs() {
     els.tabbar.innerHTML = categories.map((c) =>
-      `<button class="tab ${c.slug === state.category ? 'is-active' : ''}" data-cat="${c.slug}">${c.label}</button>`
+      `<button class="tab ${c.slug === state.category ? 'is-active' : ''}" data-cat="${esc(c.slug)}">${esc(c.label)}</button>`
     ).join('');
     els.tabbar.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
       state.category = t.dataset.cat;

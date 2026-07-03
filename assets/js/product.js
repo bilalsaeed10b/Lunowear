@@ -2,7 +2,7 @@
    Luna — Product detail page
    ============================================================ */
 window.LUNA.onReady(function () {
-  const { products, getProduct, formatPrice, productCardHTML, Store, I } = window.LUNA;
+  const { products, getProduct, formatPrice, productCardHTML, Store, I, esc } = window.LUNA;
   const id = new URLSearchParams(location.search).get('id');
   const p = getProduct(id) || products[0];
   const root = document.querySelector('[data-pdp]');
@@ -25,29 +25,29 @@ window.LUNA.onReady(function () {
 
   root.innerHTML = `
     <nav class="crumb container" style="padding-inline:0">
-      <a href="index.html">Home</a> / <a href="collection.html?c=all&dept=men">${p.dept}</a> / <b>${p.name}</b>
+      <a href="index.html">Home</a> / <a href="collection.html?c=all&dept=men">${esc(p.dept)}</a> / <b>${esc(p.name)}</b>
     </nav>
     <div class="pdp">
       <div class="pdp__gallery">
         <div class="pdp__thumbs" data-thumbs>
-          ${p.images.map((src, i) => `<button class="pdp__thumb ${i === 0 ? 'is-active' : ''}" data-thumb="${i}"><img src="${src}" alt="${p.name} view ${i + 1}"></button>`).join('')}
+          ${p.images.map((src, i) => `<button class="pdp__thumb ${i === 0 ? 'is-active' : ''}" data-thumb="${i}"><img src="${esc(src)}" alt="${esc(p.name)} view ${i + 1}"></button>`).join('')}
         </div>
-        <div class="pdp__main"><img src="${p.images[0]}" alt="${p.name}" data-main-img></div>
+        <div class="pdp__main"><img src="${esc(p.images[0])}" alt="${esc(p.name)}" data-main-img></div>
       </div>
       <div class="pdp__details">
         ${p.badge ? `<span class="eyebrow" style="color:var(--sale)">${p.badge === 'sale' ? `Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs` : 'New Arrival'}</span>` : ''}
-        <h1 class="pdp__title">${p.name}</h1>
-        <p class="pdp__sub">${p.subtitle}</p>
+        <h1 class="pdp__title">${esc(p.name)}</h1>
+        <p class="pdp__sub">${esc(p.subtitle)}</p>
         <div class="pdp__price">${priceHTML()}</div>
 
-        <span class="pdp__label">Color: <span data-color-name>${sel.color}</span></span>
+        <span class="pdp__label">Color: <span data-color-name>${esc(sel.color)}</span></span>
         <div class="swatches" data-swatches>
-          ${p.colors.map((c, i) => `<button class="swatch ${i === 0 ? 'is-active' : ''}" data-color="${c.name}" style="background:${c.hex}" aria-label="${c.name}"></button>`).join('')}
+          ${p.colors.map((c, i) => `<button class="swatch ${i === 0 ? 'is-active' : ''}" data-color="${esc(c.name)}" style="background:${esc(c.hex)}" aria-label="${esc(c.name)}"></button>`).join('')}
         </div>
 
         <span class="pdp__label">Select Size</span>
         <div class="sizes" data-sizes>
-          ${p.sizes.map((s) => `<button class="size" data-size="${s}">${s}</button>`).join('')}
+          ${p.sizes.map((s) => `<button class="size" data-size="${esc(s)}">${esc(s)}</button>`).join('')}
         </div>
 
         <div class="pdp__actions">
@@ -56,7 +56,7 @@ window.LUNA.onReady(function () {
         </div>
 
         <div class="accordion">
-          ${accordion('Description', p.description || `A wardrobe staple reimagined. The ${p.name.toLowerCase()} is cut for a ${p.fit.toLowerCase()} and finished with premium, durable fabrication for everyday wear.`)}
+          ${accordion('Description', esc(p.description || `A wardrobe staple reimagined. The ${p.name.toLowerCase()} is cut for a ${p.fit.toLowerCase()} and finished with premium, durable fabrication for everyday wear.`))}
           ${accordion('Material & Care', 'Premium cotton-blend. Machine wash cold, tumble dry low, do not bleach. Iron on reverse if needed.')}
           ${accordion('Delivery & Returns', 'Free standard delivery on orders over PKR 3,500. Easy 14-day returns on unworn items with tags attached.')}
         </div>

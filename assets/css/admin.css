@@ -71,6 +71,13 @@ body.adm {
 .moon--float { animation: moonfloat 7s ease-in-out infinite; }
 @keyframes moonfloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
 @media (prefers-reduced-motion: reduce) { .moon::before, .moon--float { animation: none; } }
+/* fx.js drag-to-spin support (same behaviour as the storefront) */
+.moon.moon--js-rotate::before {
+  animation: none !important;
+  transform: translate(calc(var(--moon-tx, 0) * 1%), calc(var(--moon-ty, 0) * 1%)) !important;
+}
+.moon.is-tilting { cursor: grab; }
+.moon.is-grabbing { cursor: grabbing; }
 
 /* ---------- buttons / inputs ---------- */
 .adm-btn {
@@ -99,7 +106,8 @@ input, select, textarea { font: inherit; }
   background: radial-gradient(circle at 50% 120%, #23262e 0%, #14161b 45%, #0b0d11 100%);
   position: relative; overflow: hidden;
 }
-.adm-login .adm-moon { position: absolute; pointer-events: none; }
+.adm-login .adm-moon { position: absolute; }
+.adm-login .adm-moon .moon { cursor: grab; touch-action: none; }
 .adm-login .adm-moon--left { left: clamp(1.5rem, 10vw, 12rem); top: calc(50% - 260px); width: 150px; height: 150px; }
 .adm-login .adm-moon--right { right: clamp(1.5rem, 10vw, 12rem); top: calc(50% + 60px); width: 105px; height: 105px; }
 .adm-login .adm-moon--right .moon { animation-delay: -3.5s; }

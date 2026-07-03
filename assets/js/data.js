@@ -79,6 +79,9 @@
     : Promise.resolve(console.warn('Luna: Supabase not configured — catalog is empty. See SETUP.md.'));
 
   window.LUNA = window.LUNA || {};
+  // HTML-escape helper used by every template that renders DB content.
+  window.LUNA.esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   window.LUNA.products = products;
   window.LUNA.categories = categories;
   window.LUNA.formatPrice = (n) => 'PKR ' + Number(n || 0).toLocaleString('en-PK');

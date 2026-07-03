@@ -4,7 +4,7 @@
    (Internal namespace stays window.LUNA for stability.)
    ============================================================ */
 (function () {
-  const { Store, formatPrice, getProduct } = window.LUNA;
+  const { Store, formatPrice, getProduct, esc } = window.LUNA;
 
   /* ---------- Icon set (inline SVG) ---------- */
   const I = {
@@ -103,6 +103,7 @@
         <a class="mmenu__link" href="coming-soon.html?dept=juniors">Juniors <span class="soon-tag">Soon</span></a>
         <a class="mmenu__link" href="collection.html?c=all&sale=1">Sale ${I.chevR}</a>
         <a class="mmenu__link" href="collection.html?c=footwear&dept=men">Footwear ${I.chevR}</a>
+        <a class="mmenu__link" href="track.html">Track Order ${I.chevR}</a>
         <a class="mmenu__link" href="about.html">About ${I.chevR}</a>
         <a class="mmenu__link" href="contact.html">Contact ${I.chevR}</a>
       </div>
@@ -125,18 +126,19 @@
       ? `<b>${formatPrice(p.price)}</b><del>${formatPrice(p.compareAt)}</del><span class="off">Save ${(p.compareAt - p.price).toLocaleString('en-PK')} rs</span>`
       : `<b>${formatPrice(p.price)}</b>`;
     const wished = Store.isWished(p.id) ? 'is-active' : '';
+    const id = esc(p.id);
     return `
-    <article class="prod" data-id="${p.id}">
-      <a class="prod__media" href="product.html?id=${p.id}">
+    <article class="prod" data-id="${id}">
+      <a class="prod__media" href="product.html?id=${encodeURIComponent(p.id)}">
         ${badge}
-        <img class="prod__img" src="${p.images[0]}" alt="${p.name}" loading="lazy" />
-        <img class="prod__img prod__img--hover" src="${p.images[1]}" alt="" loading="lazy" />
-        <button class="prod__wish ${wished}" data-wish="${p.id}" aria-label="Add to wishlist" onclick="event.preventDefault();LUNA.onWish(this,'${p.id}')">${I.heart}</button>
-        <button class="prod__add" onclick="event.preventDefault();LUNA.quickAdd('${p.id}')">${I.bag}<span>Add to Basket</span></button>
+        <img class="prod__img" src="${esc(p.images[0])}" alt="${esc(p.name)}" loading="lazy" />
+        <img class="prod__img prod__img--hover" src="${esc(p.images[1] || p.images[0])}" alt="" loading="lazy" />
+        <button class="prod__wish ${wished}" data-wish="${id}" aria-label="Add to wishlist" onclick="event.preventDefault();LUNA.onWish(this,'${id}')">${I.heart}</button>
+        <button class="prod__add" onclick="event.preventDefault();LUNA.quickAdd('${id}')">${I.bag}<span>Add to Basket</span></button>
       </a>
-      <a class="prod__info" href="product.html?id=${p.id}">
-        <h3 class="prod__name">${p.name}</h3>
-        <p class="prod__sub">${p.subtitle}</p>
+      <a class="prod__info" href="product.html?id=${encodeURIComponent(p.id)}">
+        <h3 class="prod__name">${esc(p.name)}</h3>
+        <p class="prod__sub">${esc(p.subtitle)}</p>
         <div class="prod__price">${priceHTML}</div>
       </a>
     </article>`;
@@ -152,17 +154,18 @@
       ? `<b>${formatPrice(p.price)}</b><del>${formatPrice(p.compareAt)}</del>`
       : `<b>${formatPrice(p.price)}</b>`;
     const wished = Store.isWished(p.id) ? 'is-active' : '';
+    const id = esc(p.id);
     return `
-    <article class="fcard ${p.soldOut ? 'is-sold' : ''}" data-id="${p.id}">
-      <a class="fcard__media" href="product.html?id=${p.id}">
+    <article class="fcard ${p.soldOut ? 'is-sold' : ''}" data-id="${id}">
+      <a class="fcard__media" href="product.html?id=${encodeURIComponent(p.id)}">
         ${sold}
-        <img class="fcard__img" src="${p.images[0]}" alt="${p.name}" loading="lazy" />
-        <img class="fcard__img fcard__img--hover" src="${p.images[1]}" alt="" loading="lazy" />
-        <button class="prod__wish ${wished}" data-wish="${p.id}" aria-label="Add to wishlist" onclick="event.preventDefault();LUNA.onWish(this,'${p.id}')">${I.heart}</button>
+        <img class="fcard__img" src="${esc(p.images[0])}" alt="${esc(p.name)}" loading="lazy" />
+        <img class="fcard__img fcard__img--hover" src="${esc(p.images[1] || p.images[0])}" alt="" loading="lazy" />
+        <button class="prod__wish ${wished}" data-wish="${id}" aria-label="Add to wishlist" onclick="event.preventDefault();LUNA.onWish(this,'${id}')">${I.heart}</button>
         <div class="fcard__dots">${dots}</div>
       </a>
       <div class="fcard__info">
-        <a class="fcard__name" href="product.html?id=${p.id}">${p.name}</a>
+        <a class="fcard__name" href="product.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>
         <div class="fcard__price">${priceHTML}</div>
       </div>
     </article>`;
@@ -258,10 +261,10 @@
       const p = getProduct(item.id);
       if (!p) return '';
       return `<div class="cart-item">
-        <a class="cart-item__img" href="product.html?id=${p.id}"><img src="${p.images[0]}" alt="${p.name}"></a>
+        <a class="cart-item__img" href="product.html?id=${encodeURIComponent(p.id)}"><img src="${esc(p.images[0])}" alt="${esc(p.name)}"></a>
         <div>
-          <a class="cart-item__name" href="product.html?id=${p.id}">${p.name}</a>
-          <div class="cart-item__meta">${[item.size, item.color].filter(Boolean).join(' · ') || p.subtitle}</div>
+          <a class="cart-item__name" href="product.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>
+          <div class="cart-item__meta">${esc([item.size, item.color].filter(Boolean).join(' · ') || p.subtitle)}</div>
           <div class="cart-item__price">${formatPrice(p.price)}</div>
           <div class="qty">
             <button aria-label="Decrease" onclick="LUNA.qty(${i},-1)">–</button>
@@ -290,15 +293,16 @@
     body.innerHTML = ids.map((id) => {
       const p = getProduct(id);
       if (!p) return '';
+      const pid = esc(p.id);
       return `<div class="cart-item">
-        <a class="cart-item__img" href="product.html?id=${p.id}"><img src="${p.images[0]}" alt="${p.name}"></a>
+        <a class="cart-item__img" href="product.html?id=${encodeURIComponent(p.id)}"><img src="${esc(p.images[0])}" alt="${esc(p.name)}"></a>
         <div>
-          <a class="cart-item__name" href="product.html?id=${p.id}">${p.name}</a>
-          <div class="cart-item__meta">${p.subtitle}</div>
+          <a class="cart-item__name" href="product.html?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a>
+          <div class="cart-item__meta">${esc(p.subtitle)}</div>
           <div class="cart-item__price">${formatPrice(p.price)}</div>
-          <button class="btn btn--outline" style="margin-top:.6rem;padding:.5rem 1rem;font-size:var(--fs-xs)" onclick="LUNA.quickAdd('${p.id}')">Add to Bag</button>
+          <button class="btn btn--outline" style="margin-top:.6rem;padding:.5rem 1rem;font-size:var(--fs-xs)" onclick="LUNA.quickAdd('${pid}')">Add to Bag</button>
         </div>
-        <button class="cart-item__remove" onclick="LUNA.onWish(null,'${p.id}')">Remove</button>
+        <button class="cart-item__remove" onclick="LUNA.onWish(null,'${pid}')">Remove</button>
       </div>`;
     }).join('');
   }

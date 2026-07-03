@@ -49,6 +49,13 @@ Secret from [Google Cloud Console](https://console.cloud.google.com/apis/credent
 "Continue with Google" button shows an error. Google sign-in also requires the
 site to be opened over http(s) — `node server.mjs` locally, not a `file://` path.
 
+## 3c. Security hardening (migration 3)
+
+In **SQL Editor**, run [`supabase/schema3-security.sql`](supabase/schema3-security.sql)
+once — it rate-limits order placement (max 5 orders/email/hour). Then in the
+dashboard: **Authentication → Attack Protection → enable Leaked password
+protection**, and **Authentication → URL Configuration → set your Site URL**.
+
 ## 4. Connect the website
 
 1. Dashboard → **Settings** → **API Keys**: copy the **Project URL** and the
