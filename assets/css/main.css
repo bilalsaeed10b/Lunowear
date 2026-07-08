@@ -113,7 +113,7 @@ ul { list-style: none; padding: 0; }
 .logo {
   font-family: var(--font-logo);
   font-weight: 600;
-  font-size: 1.95rem;
+  font-size: 2.4rem;
   line-height: 1;
   color: var(--ink);
   display: inline-flex;
@@ -581,7 +581,7 @@ ul { list-style: none; padding: 0; }
   .hamburger { display: grid; }
   .header__inner { grid-template-columns: auto 1fr auto; }
   .header__left { gap: 0.5rem; }
-  .logo { font-size: 1.55rem; }
+  .logo { font-size: 1.85rem; }
   .newsletter__inner { grid-template-columns: 1fr; }
   .footer__top { grid-template-columns: 1fr 1fr; }
   .pdp { grid-template-columns: 1fr; }
@@ -834,7 +834,7 @@ ul { list-style: none; padding: 0; }
 
 /* Decorative brand moon in the footer */
 .footer__moon { margin-top: 1.6rem; }
-.footer__moon .moon { width: 64px; height: 64px; }
+.footer__moon .moon { width: 96px; height: 96px; }
 
 /* ============================================================
    Motion FX: scroll reveals + pointer tilt (html.fx set by fx.js)
