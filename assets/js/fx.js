@@ -139,7 +139,9 @@
 
   /* ---------- Interactive Moon Rotation & 3D Tilt ---------- */
   function initMoonInteractivity() {
-    var moons = Array.prototype.slice.call(document.querySelectorAll('.moon'));
+    // Skip moons upgraded to the real 3D model (.moon--3d) — those are
+    // driven by <model-viewer>'s own camera controls, not the CSS surface.
+    var moons = Array.prototype.slice.call(document.querySelectorAll('.moon:not(.moon--3d)'));
     if (!moons.length) return;
 
     var defaultSpeedX = -0.0925;
@@ -203,7 +205,7 @@
     // Use Pointer Events for robust unified drag handling + capturing
     document.addEventListener('pointerdown', function (e) {
       var moon = e.target.closest('.moon');
-      if (!moon) return;
+      if (!moon || moon.classList.contains('moon--3d')) return;
       
       moon.setPointerCapture(e.pointerId);
       moon.isDragging = true;
@@ -255,6 +257,7 @@
       }
 
       var hoveredMoon = e.target.closest('.moon');
+      if (hoveredMoon && hoveredMoon.classList.contains('moon--3d')) hoveredMoon = null;
       if (hoveredMoon && !hoveredMoon.isDragging) {
         var rect = hoveredMoon.getBoundingClientRect();
         var px = (e.clientX - rect.left) / rect.width - 0.5;
