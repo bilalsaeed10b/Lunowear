@@ -131,16 +131,6 @@ ul { list-style: none; padding: 0; }
   border-radius: 50%;
   margin-left: 0.03em;
   vertical-align: middle;
-  /* Synced with logoOrbit (same 9s clock): the empty O thickens its
-     stroke while the moon is away, and relaxes when it docks back.
-     box-sizing is border-box, so the ring's outer size never shifts. */
-  animation: logoOStroke 9s linear infinite;
-}
-@keyframes logoOStroke {
-  0%, 55% { border-width: 3px; }
-  61%     { border-width: 5px; }
-  93%     { border-width: 5px; }
-  100%    { border-width: 3px; }
 }
 .logo__o > span:last-child { /* hide the actual "O" glyph */
   position: absolute;
@@ -187,7 +177,6 @@ ul { list-style: none; padding: 0; }
   100%  { transform: translate(-50%, -50%) scale(1); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .logo__o { animation: none; }
   .logo__o .moon--o { animation: none; }
 }
 
