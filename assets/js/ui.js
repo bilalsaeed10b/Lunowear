@@ -55,7 +55,13 @@
           <nav class="nav">
             <a class="nav__link" href="collection.html?c=all&dept=men">Men</a>
             <a class="nav__link" href="coming-soon.html?dept=women">Women</a>
-            <a class="nav__link" href="coming-soon.html?dept=juniors">Juniors</a>
+            <div class="nav__item">
+              <a class="nav__link" href="coming-soon.html?dept=juniors">Juniors<span class="nav__caret" aria-hidden="true">▾</span></a>
+              <div class="nav__drop">
+                <a href="coming-soon.html?dept=juniors&cat=boys">Boys</a>
+                <a href="coming-soon.html?dept=juniors&cat=girls">Girls</a>
+              </div>
+            </div>
           </nav>
         </div>
         <a class="logo" href="index.html" aria-label="Luno home">${logoHTML()}</a>
@@ -101,6 +107,8 @@
         <a class="mmenu__link" href="collection.html?c=all&dept=men">Men ${I.chevR}</a>
         <a class="mmenu__link" href="coming-soon.html?dept=women">Women <span class="soon-tag">Soon</span></a>
         <a class="mmenu__link" href="coming-soon.html?dept=juniors">Juniors <span class="soon-tag">Soon</span></a>
+        <a class="mmenu__link mmenu__link--sub" href="coming-soon.html?dept=juniors&cat=boys">Boys</a>
+        <a class="mmenu__link mmenu__link--sub" href="coming-soon.html?dept=juniors&cat=girls">Girls</a>
         <a class="mmenu__link" href="collection.html?c=all&sale=1">Sale ${I.chevR}</a>
         <a class="mmenu__link" href="collection.html?c=footwear&dept=men">Footwear ${I.chevR}</a>
         <a class="mmenu__link" href="track.html">Track Order ${I.chevR}</a>

@@ -13,10 +13,8 @@
           <span class="logo">${logo}</span>
           <p>Modern essentials and seasonal apparel, designed in a refined monochrome palette for everyday wear.</p>
           <div class="footer__social">
-            <a href="#" aria-label="Instagram">${I.ig}</a>
-            <a href="#" aria-label="Facebook">${I.fb}</a>
-            <a href="#" aria-label="TikTok">${I.tt}</a>
-            <a href="#" aria-label="YouTube">${I.yt}</a>
+            <a href="https://www.instagram.com/stylistwear" target="_blank" rel="noopener noreferrer" aria-label="Instagram">${I.ig}</a>
+            <a href="https://www.facebook.com/profile.php?id=61572334771470" target="_blank" rel="noopener noreferrer" aria-label="Facebook">${I.fb}</a>
           </div>
           <div class="footer__moon"><span class="moon" aria-hidden="true"></span></div>
         </div>

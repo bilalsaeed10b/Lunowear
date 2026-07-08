@@ -211,6 +211,33 @@ ul { list-style: none; padding: 0; }
 }
 .nav__link:hover::after, .nav__link.is-active::after { transform: scaleX(1); }
 
+/* Nav dropdown (Juniors → Boys / Girls) */
+.nav__item { position: relative; display: inline-flex; align-items: center; }
+.nav__caret { font-size: 0.6em; margin-left: 0.3rem; line-height: 1; opacity: 0.7; }
+.nav__drop {
+  position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  min-width: 148px; padding: 0.4rem 0;
+  background: var(--bg); border: 1px solid var(--line);
+  box-shadow: var(--shadow-2); border-radius: 6px;
+  opacity: 0; visibility: hidden;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+  z-index: 80;
+}
+.nav__item:hover .nav__drop,
+.nav__item:focus-within .nav__drop {
+  opacity: 1; visibility: visible;
+  transform: translateX(-50%) translateY(4px);
+}
+.nav__drop a {
+  display: block; padding: 0.55rem 1.2rem;
+  font-family: var(--font-display); font-weight: 600; font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--ink); white-space: nowrap;
+  transition: background var(--dur) var(--ease);
+}
+.nav__drop a:hover { background: var(--bg-muted); }
+
 /* Header icons */
 .iconbtn {
   position: relative;
@@ -454,10 +481,15 @@ ul { list-style: none; padding: 0; }
 /* ---------- Newsletter ---------- */
 .newsletter { background: var(--bg-dark); color: var(--on-dark); }
 .newsletter__inner { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 64px); align-items: center; }
-.newsletter h2 { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-2xl); text-transform: uppercase; line-height: 1; }
+/* Let the grid tracks ignore their children's intrinsic min-content (the
+   email input + button) so the form can shrink to fit narrow screens. */
+.newsletter__inner > * { min-width: 0; }
+.newsletter h2 { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-2xl); text-transform: uppercase; line-height: 1; overflow-wrap: break-word; }
 .newsletter p { color: rgba(245,245,244,0.7); margin-top: 0.8rem; }
 .news-form { display: flex; gap: 0; border: 1px solid rgba(255,255,255,0.3); }
-.news-form input { flex: 1; background: transparent; border: none; outline: none; color: #fff; padding: 1.1rem 1.2rem; }
+/* min-width:0 lets the input shrink below its intrinsic ~20ch size so the
+   form never forces its grid track wider than the viewport on small screens. */
+.news-form input { flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: #fff; padding: 1.1rem 1.2rem; }
 .news-form input::placeholder { color: rgba(245,245,244,0.5); }
 .news-form button { padding: 0 1.8rem; background: #fff; color: var(--ink); font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: var(--tracking-wide); font-size: var(--fs-sm); }
 
@@ -572,6 +604,7 @@ ul { list-style: none; padding: 0; }
 .mmenu__head { display: flex; align-items: center; justify-content: space-between; padding: 1.3rem 1.5rem; border-bottom: 1px solid var(--line); }
 .mmenu__body { padding: 1rem 1.5rem; }
 .mmenu__link { display: flex; align-items: center; justify-content: space-between; font-family: var(--font-display); font-weight: 800; text-transform: uppercase; font-size: 1.4rem; padding: 1rem 0; border-bottom: 1px solid var(--line); }
+.mmenu__link--sub { font-size: 1.05rem; font-weight: 600; padding: 0.7rem 0 0.7rem 1.1rem; color: var(--ink-2); }
 .mmenu__link svg { width: 20px; height: 20px; flex-shrink: 0; }
 
 /* ---------- Product detail page ---------- */
@@ -612,6 +645,12 @@ ul { list-style: none; padding: 0; }
 .empty-note { text-align: center; color: var(--ink-2); padding: 4rem 1rem; }
 
 /* ---------- Responsive ---------- */
+/* Kill accidental sideways scroll on every page (off-canvas drawers/menu,
+   reveal transforms, full-bleed media). `clip` on the X axis contains the
+   overflow WITHOUT turning html into a scroll container, so the sticky
+   header and Y-axis scrolling keep working (unlike `overflow:hidden`). */
+html { overflow-x: clip; }
+
 @media (max-width: 1100px) {
   .grid-products { grid-template-columns: repeat(3, 1fr); }
   .focus { grid-template-columns: 1fr; }
@@ -746,6 +785,7 @@ ul { list-style: none; padding: 0; }
   -webkit-user-select: none;
   touch-action: none;
 
+<<<<<<< Updated upstream
   /* Single theme: realistic white moon â€” neutral lunar greys with a
      sunlit upper-left, a soft terminator, and a gentle moonlight glow. */
   --moon-bg: radial-gradient(circle at 32% 30%, #ffffff 0%, #f1efe9 36%, #d7d3c8 66%, #a5a193 100%);
@@ -764,6 +804,26 @@ ul { list-style: none; padding: 0; }
   --moon-mare: rgba(118, 114, 100, 0.26);
   --moon-limb: rgba(78, 72, 55, 0.28);
   --moon-limb-2: rgba(54, 49, 36, 0.5);
+=======
+  /* White Moon everywhere: cream-white sphere that reads on both light and
+     dark backgrounds (the logo "O" sits inside a ring, the footer/hero moons
+     carry their own limb shading). */
+  --moon-bg: radial-gradient(circle at 32% 30%, #ffffff 0%, #f4eee3 40%, #dfd5be 72%, #c3b8a1 100%);
+  --moon-shadow-inset:
+    inset -0.16em -0.16em 0.3em rgba(60, 52, 34, 0.4),
+    inset 0.05em 0.05em 0.14em rgba(255, 255, 255, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.06);
+  --moon-crater-1: rgba(120, 108, 86, 0.55);
+  --moon-crater-2: rgba(120, 108, 86, 0.40);
+  --moon-crater-3: rgba(120, 108, 86, 0.50);
+  --moon-crater-4: rgba(120, 108, 86, 0.32);
+  --moon-crater-5: rgba(120, 108, 86, 0.35);
+  --moon-shading:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.20), transparent 42%),
+    radial-gradient(circle at 76% 80%, rgba(38, 30, 16, 0.50), transparent 55%);
+  --moon-limb: rgba(74, 60, 36, 0.30);
+  --moon-limb-2: rgba(52, 42, 24, 0.52);
+>>>>>>> Stashed changes
 
   background: var(--moon-bg);
   box-shadow: var(--moon-shadow-inset);
