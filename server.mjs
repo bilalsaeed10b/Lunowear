@@ -55,7 +55,12 @@ const server = createServer(async (req, res) => {
     if (info.isDirectory && info.isDirectory()) filePath = join(filePath, 'index.html');
 
     const data = await readFile(filePath);
-    res.writeHead(200, { 'Content-Type': MIME[extname(filePath)] || 'application/octet-stream' });
+    res.writeHead(200, {
+      'Content-Type': MIME[extname(filePath)] || 'application/octet-stream',
+      // Always serve fresh files — heuristic caching otherwise lets the
+      // browser show stale JS/CSS after an edit.
+      'Cache-Control': 'no-cache',
+    });
     res.end(data);
   } catch (err) {
     res.writeHead(500, { 'Content-Type': 'text/html' });

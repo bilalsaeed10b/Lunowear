@@ -39,8 +39,9 @@
     orders: [],
     prodQuery: '',
     orderFilter: '',
-    editing: null, // product being edited (null = new)
-    images: [],    // image URLs in the open editor
+    editing: null,     // product being edited (null = new)
+    gallery: { mains: [], variants: [] }, // mains: [url]; variants: [{url, color, main}] (main = index into mains)
+    uploadTarget: null, // where the next upload lands: {type:'main'} or {type:'variant', main: i}
   };
 
   function show(view) {
@@ -181,7 +182,25 @@
 
   function openEditor(p) {
     state.editing = p || null;
-    state.images = p ? [...(p.images || [])] : [];
+    // split stored flat arrays into mains + linked variants
+    // (string entries = legacy order-paired tags; objects = {color, main})
+    const imgs = p ? (p.images || []) : [];
+    const ic = p && Array.isArray(p.image_colors) ? p.image_colors : [];
+    const mains = [], variants = [], legacySeq = {};
+    imgs.forEach((url, i) => {
+      const t = ic[i];
+      if (typeof t === 'string' && t.trim()) {
+        const c = t.trim();
+        variants.push({ url, color: c, main: (legacySeq[c] = (legacySeq[c] || 0) + 1) - 1 });
+      } else if (t && typeof t === 'object' && t.color) {
+        variants.push({ url, color: String(t.color), main: Number.isInteger(t.main) ? t.main : 0 });
+      } else {
+        mains.push(url);
+      }
+    });
+    variants.forEach((v) => { v.main = Math.max(0, Math.min(mains.length - 1, v.main)); });
+    state.gallery = { mains, variants };
+    state.uploadTarget = null;
     editorError('');
     $('[data-editor-title]').textContent = p ? 'Edit Product' : 'New Product';
     $('[data-cat-select]').innerHTML = state.categories.map((c) =>
@@ -220,7 +239,11 @@
     <button type="button" class="adm-btn adm-btn--ghost" data-color-del>✕</button>
   </div>`;
   function wireColorRows() {
-    $$('[data-color-del]').forEach((b) => b.addEventListener('click', () => b.parentElement.remove()));
+    $$('[data-color-del]').forEach((b) => b.addEventListener('click', () => {
+      b.parentElement.remove();
+      renderImages(); // keep per-image color dropdowns in sync
+    }));
+    $$('.adm-color-row input[type=text]').forEach((inp) => inp.addEventListener('change', renderImages));
   }
   $('[data-add-color]').addEventListener('click', () => {
     $('[data-color-rows]').insertAdjacentHTML('beforeend', colorRowHTML({ name: '', hex: '#1a1a1a' }));
@@ -233,23 +256,86 @@
     })).filter((c) => c.name);
   }
 
-  /* images */
+  /* images — list of main-photo rows. Each row: the main photo (shown on the
+     product page), its color variants on the right (+ to add one, each with a
+     color picker), and a + tile under the list to add more main photos. */
   function renderImages() {
-    $('[data-image-list]').innerHTML = state.images.map((url, i) => `<div class="adm-img">
-      <img src="${esc(url)}" alt="" />
-      ${i === 0 ? '<span class="main-tag">Main</span>' : ''}
-      <button type="button" data-img-del="${i}" title="Remove">✕</button>
-    </div>`).join('');
-    $$('[data-img-del]').forEach((b) => b.addEventListener('click', () => {
-      state.images.splice(+b.dataset.imgDel, 1);
+    const g = state.gallery;
+    const colorNames = readColors().map((c) => c.name);
+    $('[data-image-list]').innerHTML = g.mains.map((url, mi) => {
+      const vs = g.variants.map((v, vi) => ({ ...v, vi })).filter((v) => v.main === mi);
+      return `<div class="adm-imgrow">
+        <div class="adm-img">
+          <img src="${esc(url)}" alt="" />
+          ${mi === 0 ? '<span class="main-tag">Cover</span>' : ''}
+          <button type="button" data-main-del="${mi}" title="Remove photo (and its color variants)">✕</button>
+          <select class="adm-img-color" data-main-color="${mi}" title="Turn this photo into a color variant">
+            <option value="">Main photo</option>
+            ${colorNames.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="adm-variants">
+          ${vs.map((v) => {
+            const opts = [...new Set([...colorNames, ...(v.color ? [v.color] : [])])];
+            return `<div class="adm-img adm-img--variant">
+              <img src="${esc(v.url)}" alt="" />
+              <button type="button" data-variant-del="${v.vi}" title="Remove variant">✕</button>
+              <select class="adm-img-color" data-variant-color="${v.vi}" title="Which color is this photo?">
+                <option value="">Pick color…</option>
+                ${opts.map((n) => `<option value="${esc(n)}" ${n === v.color ? 'selected' : ''}>${esc(n)}</option>`).join('')}
+              </select>
+            </div>`;
+          }).join('')}
+          <button type="button" class="adm-addtile" data-add-variant="${mi}" title="Add this photo in another color">+</button>
+        </div>
+      </div>`;
+    }).join('') +
+    `<button type="button" class="adm-addtile adm-addtile--main" data-add-main>+ ${g.mains.length ? 'Add main image' : 'Upload first image'}</button>`;
+
+    $('[data-add-main]').addEventListener('click', () => pickFiles({ type: 'main' }));
+    $$('[data-add-variant]').forEach((b) => b.addEventListener('click', () =>
+      pickFiles({ type: 'variant', main: +b.dataset.addVariant })));
+    $$('[data-main-del]').forEach((b) => b.addEventListener('click', () => {
+      const mi = +b.dataset.mainDel;
+      g.mains.splice(mi, 1);
+      g.variants = g.variants.filter((v) => v.main !== mi);
+      g.variants.forEach((v) => { if (v.main > mi) v.main--; });
+      renderImages();
+    }));
+    $$('[data-variant-del]').forEach((b) => b.addEventListener('click', () => {
+      g.variants.splice(+b.dataset.variantDel, 1);
+      renderImages();
+    }));
+    $$('[data-variant-color]').forEach((s) => s.addEventListener('change', () => {
+      g.variants[+s.dataset.variantColor].color = s.value;
+    }));
+    // demote a main photo to a color variant of the row above it
+    $$('[data-main-color]').forEach((s) => s.addEventListener('change', () => {
+      const mi = +s.dataset.mainColor;
+      const color = s.value;
+      if (!color) return;
+      if (g.mains.length === 1) { toast('Keep at least one main photo'); renderImages(); return; }
+      const url = g.mains.splice(mi, 1)[0];
+      const home = Math.max(0, mi - 1); // attaches to the previous main row
+      g.variants.forEach((v) => {
+        if (v.main === mi) v.main = home;      // its own variants move with it
+        else if (v.main > mi) v.main--;        // later rows shift up
+      });
+      g.variants.push({ url, color, main: home });
       renderImages();
     }));
   }
 
-  $('[data-upload-btn]').addEventListener('click', () => $('[data-image-input]').click());
+  function pickFiles(target) {
+    state.uploadTarget = target;
+    $('[data-image-input]').click();
+  }
+
   $('[data-image-input]').addEventListener('change', async (e) => {
     const files = [...e.target.files];
     e.target.value = '';
+    const target = state.uploadTarget || { type: 'main' };
+    state.uploadTarget = null;
     if (!files.length) return;
     const status = $('[data-upload-status]');
     for (let i = 0; i < files.length; i++) {
@@ -261,7 +347,8 @@
       const { error } = await sb.storage.from('product-images').upload(path, file, { cacheControl: '31536000' });
       if (error) { toast(`Upload failed: ${error.message}`); continue; }
       const { data } = sb.storage.from('product-images').getPublicUrl(path);
-      state.images.push(data.publicUrl);
+      if (target.type === 'variant') state.gallery.variants.push({ url: data.publicUrl, color: '', main: target.main });
+      else state.gallery.mains.push(data.publicUrl);
       renderImages();
     }
     status.textContent = '';
@@ -281,7 +368,12 @@
     if (compareAt !== null && compareAt <= price) return editorError('Compare-at price must be higher than the price.');
     if (!colors.length) return editorError('Add at least one color (with a name).');
     if (!sizes.length) return editorError('Add at least one size.');
-    if (!state.images.length) return editorError('Upload at least one image.');
+    const g = state.gallery;
+    if (!g.mains.length) return editorError('Upload at least one main image.');
+    if (g.variants.some((v) => !v.color)) return editorError('Pick a color for every color-variant image (or remove it).');
+    const known = colors.map((c) => c.name);
+    const orphan = g.variants.find((v) => !known.includes(v.color));
+    if (orphan) return editorError(`Variant image uses color "${orphan.color}" which is not in this product's colors.`);
 
     const row = {
       name,
@@ -294,7 +386,8 @@
       description: form.description.value.trim(),
       sizes,
       colors,
-      images: state.images,
+      images: [...g.mains, ...g.variants.map((v) => v.url)],
+      image_colors: [...g.mains.map(() => null), ...g.variants.map((v) => ({ color: v.color, main: v.main }))],
       active: form.active.checked,
       sold_out: form.sold_out.checked,
       position: parseInt(form.position.value, 10) || 0,
@@ -302,10 +395,20 @@
 
     const btn = $('[data-editor-save]');
     btn.disabled = true; btn.textContent = 'Saving…';
-    const q = state.editing
-      ? sb.from('products').update(row).eq('id', state.editing.id).select().single()
-      : sb.from('products').insert(row).select().single();
-    const { data, error } = await q;
+    const save = (r) => state.editing
+      ? sb.from('products').update(r).eq('id', state.editing.id).select().single()
+      : sb.from('products').insert(r).select().single();
+    let { data, error } = await save(row);
+    if (error && /image_colors/i.test(error.message)) {
+      // DB migration schema4-image-colors.sql not run yet.
+      if (g.variants.length) {
+        // Never silently flatten color variants into main photos — block instead.
+        btn.disabled = false; btn.textContent = 'Save Product';
+        return editorError('Color images need a one-time database update: run supabase/schema4-image-colors.sql in the Supabase SQL Editor, then save again.');
+      }
+      const { image_colors, ...rest } = row; // no variants -> tags are all null, safe to drop
+      ({ data, error } = await save(rest));
+    }
     btn.disabled = false; btn.textContent = 'Save Product';
     if (error) return editorError('Save failed: ' + error.message);
 

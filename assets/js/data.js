@@ -36,6 +36,33 @@
   function fromRow(row) {
     const fit = row.fit || '';
     const dept = row.dept || 'MEN';
+    // image_colors is parallel to images. Entry per image:
+    //   null/''            -> main photo (shown by default)
+    //   {color, main}      -> variant of mains[main], shown when color selected
+    //   "Black" (legacy)   -> variant paired by order within its color
+    const allImages = Array.isArray(row.images) && row.images.length ? row.images : [''];
+    const ic = Array.isArray(row.image_colors) ? row.image_colors : [];
+    const norm = (i) => {
+      const t = ic[i];
+      if (typeof t === 'string' && t.trim()) return { color: t.trim(), main: null };
+      if (t && typeof t === 'object' && t.color) return { color: String(t.color), main: Number.isInteger(t.main) ? t.main : null };
+      return null;
+    };
+    const mainImages = allImages.filter((_, i) => !norm(i));
+    const variantMap = {}; // color -> { mainIndex: url }
+    const legacySeq = {};
+    allImages.forEach((src, i) => {
+      const v = norm(i);
+      if (!v) return;
+      const m = v.main !== null ? v.main : (legacySeq[v.color] = (legacySeq[v.color] || 0) + 1) - 1;
+      (variantMap[v.color] = variantMap[v.color] || {})[m] = src;
+    });
+    // Full gallery per color: the variant where one exists, else the original —
+    // so a color with partial variants still shows every photo position.
+    const imagesByColor = {};
+    Object.keys(variantMap).forEach((c) => {
+      imagesByColor[c] = mainImages.map((src, i) => variantMap[c][i] || src);
+    });
     return {
       id: row.id,
       name: row.name,
@@ -51,7 +78,9 @@
       badge: row.badge || null,
       soldOut: !!row.sold_out,
       description: row.description || '',
-      images: Array.isArray(row.images) && row.images.length ? row.images : [''],
+      images: mainImages.length ? mainImages : allImages, // main photos (cards, cart, default gallery)
+      allImages,
+      imagesByColor, // { "Black": [urls...] } — gallery swaps to these on color select
     };
   }
 
