@@ -36,18 +36,48 @@
   function fromRow(row) {
     const fit = row.fit || '';
     const dept = row.dept || 'MEN';
-    const colors = Array.isArray(row.colors) && row.colors.length ? row.colors : [{ name: 'Default', hex: '#1a1a1a' }];
-    // One photo per color, paired by position. image_colors is parallel to
-    // images; entry per image is { color } (or a legacy "Black" string). When
-    // missing, the color falls back to the color at the same index — so the
-    // gallery order lines up with the swatch order.
+    // Colors carry a stable id so two colors may share a display name.
+    const rawColors = Array.isArray(row.colors) && row.colors.length ? row.colors : [{ name: 'Default', hex: '#1a1a1a' }];
+    const colors = rawColors.map((c, i) => ({ id: c.id || ('lc' + i), name: c.name || 'Color', hex: c.hex || '#1a1a1a' }));
+    const colorById = {}; colors.forEach((c) => { colorById[c.id] = c; });
+    // image_colors[i] "color" is a color id (new) or a color name (legacy).
+    const toId = (v) => {
+      if (!v) return null;
+      if (colorById[v]) return v;
+      const byName = colors.find((c) => c.name === v);
+      return byName ? byName.id : null;
+    };
+    // image_colors is parallel to images:
+    //   {color}             -> a MAIN photo (gallery slot), tagged with a color
+    //   {color, main:<int>} -> a COLOR IMAGE of slot #main, shown when its color is picked
+    //   "Name" (legacy str) -> color image paired by order;  null -> legacy colorless main
     const allImages = Array.isArray(row.images) && row.images.length ? row.images : [''];
     const ic = Array.isArray(row.image_colors) ? row.image_colors : [];
-    const imageColors = allImages.map((_, i) => {
+    const mains = [], variants = [], legacySeq = {};
+    allImages.forEach((url, i) => {
       const t = ic[i];
-      if (t && typeof t === 'object' && t.color) return String(t.color);
-      if (typeof t === 'string' && t.trim()) return t.trim();
-      return (colors[i] && colors[i].name) || null; // positional fallback
+      if (typeof t === 'string' && t.trim()) {
+        const cid = toId(t.trim());
+        variants.push({ url, colorId: cid, main: (legacySeq[cid] = (legacySeq[cid] || 0) + 1) - 1 });
+      } else if (t && typeof t === 'object' && Number.isInteger(t.main)) {
+        variants.push({ url, colorId: toId(t.color), main: t.main });
+      } else if (t && typeof t === 'object' && t.color) {
+        mains.push({ url, colorId: toId(t.color) });
+      } else {
+        mains.push({ url, colorId: null });
+      }
+    });
+    if (!mains.length) mains.push({ url: allImages[0], colorId: null });
+    variants.forEach((v) => { v.main = Math.max(0, Math.min(mains.length - 1, v.main)); });
+    // Per-slot color groups: each slot exposes the colors of its main photo +
+    // its color images, and the image to show for each of those colors.
+    const mainGroups = mains.map((m) => ({ url: m.url, mainColorId: m.colorId, byColor: {}, colorIds: [] }));
+    mains.forEach((m, i) => {
+      if (m.colorId) { mainGroups[i].byColor[m.colorId] = m.url; mainGroups[i].colorIds.push(m.colorId); }
+    });
+    variants.forEach((v) => {
+      const grp = mainGroups[v.main];
+      if (grp && v.colorId && !grp.byColor[v.colorId]) { grp.byColor[v.colorId] = v.url; grp.colorIds.push(v.colorId); }
     });
     return {
       id: row.id,
@@ -59,13 +89,13 @@
       price: row.price,
       compareAt: row.compare_at || null,
       discount: row.compare_at ? Math.round((1 - row.price / row.compare_at) * 100) : 0,
-      colors,
+      colors, // [{id, name, hex}]
       sizes: Array.isArray(row.sizes) && row.sizes.length ? row.sizes : ['One Size'],
       badge: row.badge || null,
       soldOut: !!row.sold_out,
       description: row.description || '',
-      images: allImages,       // full gallery — one photo per color, in swatch order
-      imageColors,             // parallel: imageColors[i] = color name of images[i]
+      images: mains.map((m) => m.url), // gallery slots (cover = images[0])
+      mainGroups,                      // per slot: { url, mainColorId, byColor:{id:url}, colorIds:[] }
     };
   }
 

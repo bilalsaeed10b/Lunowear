@@ -15,7 +15,7 @@ window.LUNA.onReady(function () {
     return;
   }
 
-  const sel = { color: p.colors[0].name, size: null };
+  const sel = { color: '', colorId: null, size: null }; // color set once the gallery inits
   const hasDiscount = p.compareAt && p.compareAt > p.price;
 
   function priceHTML() {
@@ -46,10 +46,8 @@ window.LUNA.onReady(function () {
         <p class="pdp__sub">${esc(p.subtitle)}</p>
         <div class="pdp__price">${priceHTML()}</div>
 
-        <span class="pdp__label">Color: <span data-color-name>${esc(sel.color)}</span></span>
-        <div class="swatches" data-swatches>
-          ${p.colors.map((c, i) => `<button class="swatch ${i === 0 ? 'is-active' : ''}" data-color="${esc(c.name)}" style="background:${esc(c.hex)}" aria-label="${esc(c.name)}"></button>`).join('')}
-        </div>
+        <span class="pdp__label">Color: <span data-color-name></span></span>
+        <div class="swatches" data-swatches></div>
 
         <span class="pdp__label">Select Size</span>
         <div class="sizes" data-sizes>
@@ -86,41 +84,70 @@ window.LUNA.onReady(function () {
   const wishBtn = root.querySelector('[data-wish-btn]');
   wishBtn.classList.toggle('is-active', Store.isWished(p.id));
 
-  // Gallery: one photo per color. The carousel, thumbnail strip and colour
-  // swatches all drive the same index — swiping (or picking a thumb) browses
-  // colours, and picking a swatch jumps the carousel to that colour's photo.
+  // Gallery: one slide per gallery slot (main photo). Each slot has its own set
+  // of colours — its main photo's colour plus its "color images". The swatches
+  // show only the colours of the slot you're viewing; picking one swaps that
+  // slot's image in place. Swiping / thumbnails move between slots.
   const stage = root.querySelector('[data-stage]');
   const track = root.querySelector('[data-track]');
   const thumbsEl = root.querySelector('[data-thumbs]');
   const nextBtn = root.querySelector('[data-thumb-next]');
-  const set = p.images;
+  const swatchEl = root.querySelector('[data-swatches]');
+  const nameEl = root.querySelector('[data-color-name]');
+  const groups = (p.mainGroups && p.mainGroups.length)
+    ? p.mainGroups
+    : [{ url: p.images[0], mainColorId: null, byColor: {}, colorIds: [] }];
+  const set = groups; // one carousel slide per slot (drag code reads set.length)
   let cur = 0;
 
-  const colorAt = (i) => (p.imageColors && p.imageColors[i]) || null;
-  const indexOfColor = (c) => { const i = (p.imageColors || []).indexOf(c); return i < 0 ? 0 : i; };
+  const colorObj = (id) => p.colors.find((c) => c.id === id) || null;
+  // the colour selected within each slot (defaults to the slot's main colour)
+  const pick = groups.map((g) => g.mainColorId || g.colorIds[0] || null);
+  const slotImage = (i) => groups[i].byColor[pick[i]] || groups[i].url;
 
-  track.innerHTML = set.map((src, i) =>
-    `<div class="pdp__slide"><img src="${esc(src)}" alt="${esc(p.name)} view ${i + 1}" draggable="false"></div>`).join('');
-  thumbsEl.innerHTML = set.map((src, i) =>
-    `<button type="button" class="pdp__thumb" data-thumb="${i}"><img src="${esc(src)}" alt="${esc(p.name)} view ${i + 1}"></button>`).join('');
-  [...thumbsEl.children].forEach((btn) => btn.addEventListener('click', () => { goTo(+btn.dataset.thumb, true); syncColorToSlide(); }));
+  track.innerHTML = groups.map((g, i) =>
+    `<div class="pdp__slide"><img src="${esc(slotImage(i))}" alt="${esc(p.name)} view ${i + 1}" draggable="false"></div>`).join('');
+  thumbsEl.innerHTML = groups.map((g, i) =>
+    `<button type="button" class="pdp__thumb" data-thumb="${i}"><img src="${esc(slotImage(i))}" alt="${esc(p.name)} view ${i + 1}"></button>`).join('');
+  [...thumbsEl.children].forEach((btn) => btn.addEventListener('click', () => goTo(+btn.dataset.thumb, true)));
 
-  function selectColor(c) {
-    sel.color = c;
-    root.querySelector('[data-color-name]').textContent = c;
-    root.querySelectorAll('[data-color]').forEach((b) => b.classList.toggle('is-active', b.dataset.color === c));
+  function refreshSlot(i) {
+    const src = slotImage(i);
+    const s = track.children[i] && track.children[i].querySelector('img');
+    const t = thumbsEl.children[i] && thumbsEl.children[i].querySelector('img');
+    if (s) s.src = src;
+    if (t) t.src = src;
   }
-  // when the carousel moves on its own (swipe/thumb), match the swatch to it
-  function syncColorToSlide() { const c = colorAt(cur); if (c) selectColor(c); }
+  function syncColorLabel() {
+    const c = colorObj(pick[cur]);
+    sel.colorId = pick[cur];
+    sel.color = c ? c.name : '';
+    nameEl.textContent = sel.color;
+  }
+  function renderSwatches() {
+    const g = groups[cur];
+    swatchEl.innerHTML = g.colorIds.map((id) => {
+      const c = colorObj(id);
+      return `<button class="swatch ${id === pick[cur] ? 'is-active' : ''}" data-cid="${esc(id)}" style="background:${esc(c ? c.hex : '#1a1a1a')}" aria-label="${esc(c ? c.name : '')}"></button>`;
+    }).join('');
+    swatchEl.querySelectorAll('[data-cid]').forEach((b) => b.addEventListener('click', () => {
+      pick[cur] = b.dataset.cid;                 // change only the current slot
+      refreshSlot(cur);
+      syncColorLabel();
+      [...swatchEl.children].forEach((s) => s.classList.toggle('is-active', s.dataset.cid === pick[cur]));
+    }));
+  }
 
   function goTo(i, animate) {
-    cur = Math.max(0, Math.min(set.length - 1, i));
+    cur = Math.max(0, Math.min(groups.length - 1, i));
     track.classList.toggle('is-anim', !!animate);
     track.style.transform = `translateX(${-cur * 100}%)`;
     [...thumbsEl.children].forEach((b, bi) => b.classList.toggle('is-active', bi === cur));
     // keep the active thumb in view inside the strip
     const active = thumbsEl.children[cur];
     if (active && active.scrollIntoView) active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    renderSwatches(); // swatches reflect the slot you're now viewing
+    syncColorLabel();
   }
   // next button only when the strip overflows by a usable amount (a few px of
   // sub-pixel rounding — e.g. Windows 125% display scaling — must not count)
@@ -133,8 +160,7 @@ window.LUNA.onReady(function () {
   }
   window.addEventListener('resize', updateThumbNav);
   window.addEventListener('load', updateThumbNav);
-  // Open on the cover photo (first image) with its colour selected.
-  selectColor(colorAt(0) || sel.color);
+  // Open on the cover slot with its colour selected.
   goTo(0, false);
   updateThumbNav(); // sync — rAF may never fire in a background tab
   requestAnimationFrame(updateThumbNav); // and re-check once painted
@@ -173,19 +199,13 @@ window.LUNA.onReady(function () {
       dragging = false;
       stage.classList.remove('is-grabbing');
       const dx = (e.clientX || x0) - x0;
-      if (axis === 'x' && Math.abs(dx) > w * 0.18) { goTo(cur + (dx < 0 ? 1 : -1), true); syncColorToSlide(); }
+      if (axis === 'x' && Math.abs(dx) > w * 0.18) goTo(cur + (dx < 0 ? 1 : -1), true);
       else goTo(cur, true);                           // snap back
       axis = null;
     };
     stage.addEventListener('pointerup', end);
     stage.addEventListener('pointercancel', end);
   }
-
-  // Swatches — jump the carousel to this colour's photo.
-  root.querySelectorAll('[data-color]').forEach((btn) => btn.addEventListener('click', () => {
-    selectColor(btn.dataset.color);
-    goTo(indexOfColor(btn.dataset.color), true);
-  }));
 
   // Sizes
   root.querySelectorAll('[data-size]').forEach((btn) => btn.addEventListener('click', () => {
