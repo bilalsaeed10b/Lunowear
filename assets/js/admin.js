@@ -40,8 +40,8 @@
     prodQuery: '',
     orderFilter: '',
     editing: null,     // product being edited (null = new)
-    gallery: { mains: [], variants: [] }, // mains: [url]; variants: [{url, color, main}] (main = index into mains)
-    uploadTarget: null, // where the next upload lands: {type:'main'} or {type:'variant', main: i}
+    gallery: { mains: [] }, // mains: [{url, color}] — one photo per color, color assigned by position
+    dragFrom: null,    // index of the main row currently being dragged
   };
 
   function show(view) {
@@ -182,25 +182,13 @@
 
   function openEditor(p) {
     state.editing = p || null;
-    // split stored flat arrays into mains + linked variants
-    // (string entries = legacy order-paired tags; objects = {color, main})
+    // One photo per color. Every stored image (including any legacy per-color
+    // "variant" images) becomes a plain photo; renderImages assigns each one a
+    // color by its position (photo #1 = 1st color, #2 = 2nd, …), so opening &
+    // re-saving an old product self-heals it into the positional model.
     const imgs = p ? (p.images || []) : [];
-    const ic = p && Array.isArray(p.image_colors) ? p.image_colors : [];
-    const mains = [], variants = [], legacySeq = {};
-    imgs.forEach((url, i) => {
-      const t = ic[i];
-      if (typeof t === 'string' && t.trim()) {
-        const c = t.trim();
-        variants.push({ url, color: c, main: (legacySeq[c] = (legacySeq[c] || 0) + 1) - 1 });
-      } else if (t && typeof t === 'object' && t.color) {
-        variants.push({ url, color: String(t.color), main: Number.isInteger(t.main) ? t.main : 0 });
-      } else {
-        mains.push(url);
-      }
-    });
-    variants.forEach((v) => { v.main = Math.max(0, Math.min(mains.length - 1, v.main)); });
-    state.gallery = { mains, variants };
-    state.uploadTarget = null;
+    state.gallery = { mains: imgs.map((url) => ({ url, color: '' })) };
+    state.dragFrom = null;
     editorError('');
     $('[data-editor-title]').textContent = p ? 'Edit Product' : 'New Product';
     $('[data-cat-select]').innerHTML = state.categories.map((c) =>
@@ -256,86 +244,81 @@
     })).filter((c) => c.name);
   }
 
-  /* images — list of main-photo rows. Each row: the main photo (shown on the
-     product page), its color variants on the right (+ to add one, each with a
-     color picker), and a + tile under the list to add more main photos. */
+  /* images — a sortable list; every photo stays a MAIN photo. Its color is
+     chosen from the dropdown beneath it, and a color already used by another
+     photo is hidden from the rest, so no two photos can share a color. Drag a
+     row by its ⠿ handle to reorder; each photo keeps its chosen color. */
   function renderImages() {
     const g = state.gallery;
     const colorNames = readColors().map((c) => c.name);
-    $('[data-image-list]').innerHTML = g.mains.map((url, mi) => {
-      const vs = g.variants.map((v, vi) => ({ ...v, vi })).filter((v) => v.main === mi);
-      return `<div class="adm-imgrow">
-        <div class="adm-img">
-          <img src="${esc(url)}" alt="" />
-          ${mi === 0 ? '<span class="main-tag">Cover</span>' : ''}
-          <button type="button" data-main-del="${mi}" title="Remove photo (and its color variants)">✕</button>
-          <select class="adm-img-color" data-main-color="${mi}" title="Turn this photo into a color variant">
-            <option value="">Main photo</option>
-            ${colorNames.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('')}
+    const usedByOthers = (skip) => new Set(
+      g.mains.filter((_, i) => i !== skip).map((m) => m.color).filter(Boolean));
+    // give any blank/stale photo the first still-free color as a sensible default
+    g.mains.forEach((m, i) => {
+      if (!m.color || !colorNames.includes(m.color)) {
+        const taken = usedByOthers(i);
+        m.color = colorNames.find((n) => !taken.has(n)) || '';
+      }
+    });
+    const optionsFor = (mi) => {
+      const taken = usedByOthers(mi), cur = g.mains[mi].color;
+      const avail = colorNames.filter((n) => n === cur || !taken.has(n));
+      return `<option value="" ${cur ? '' : 'selected'} disabled>Pick color…</option>` +
+        avail.map((n) => `<option value="${esc(n)}" ${n === cur ? 'selected' : ''}>${esc(n)}</option>`).join('');
+    };
+    $('[data-image-list]').innerHTML = g.mains.map((m, mi) => `
+      <div class="adm-imgrow" data-row="${mi}">
+        <span class="adm-drag" draggable="true" title="Drag to reorder">⠿</span>
+        <div class="adm-imgcell">
+          <div class="adm-img">
+            <img src="${esc(m.url)}" alt="" draggable="false" />
+            ${mi === 0 ? '<span class="main-tag">Cover</span>' : ''}
+            <button type="button" data-main-del="${mi}" title="Remove photo">✕</button>
+          </div>
+          <select class="adm-img-color" data-main-color="${mi}" title="Which color this photo is">
+            ${optionsFor(mi)}
           </select>
         </div>
-        <div class="adm-variants">
-          ${vs.map((v) => {
-            const opts = [...new Set([...colorNames, ...(v.color ? [v.color] : [])])];
-            return `<div class="adm-img adm-img--variant">
-              <img src="${esc(v.url)}" alt="" />
-              <button type="button" data-variant-del="${v.vi}" title="Remove variant">✕</button>
-              <select class="adm-img-color" data-variant-color="${v.vi}" title="Which color is this photo?">
-                <option value="">Pick color…</option>
-                ${opts.map((n) => `<option value="${esc(n)}" ${n === v.color ? 'selected' : ''}>${esc(n)}</option>`).join('')}
-              </select>
-            </div>`;
-          }).join('')}
-          <button type="button" class="adm-addtile" data-add-variant="${mi}" title="Add this photo in another color">+</button>
-        </div>
-      </div>`;
-    }).join('') +
-    `<button type="button" class="adm-addtile adm-addtile--main" data-add-main>+ ${g.mains.length ? 'Add main image' : 'Upload first image'}</button>`;
+      </div>`).join('') +
+    `<button type="button" class="adm-addtile adm-addtile--main" data-add-main>+ ${g.mains.length ? 'Add image' : 'Upload first image'}</button>`;
 
-    $('[data-add-main]').addEventListener('click', () => pickFiles({ type: 'main' }));
-    $$('[data-add-variant]').forEach((b) => b.addEventListener('click', () =>
-      pickFiles({ type: 'variant', main: +b.dataset.addVariant })));
+    $('[data-add-main]').addEventListener('click', () => { $('[data-image-input]').click(); });
     $$('[data-main-del]').forEach((b) => b.addEventListener('click', () => {
-      const mi = +b.dataset.mainDel;
-      g.mains.splice(mi, 1);
-      g.variants = g.variants.filter((v) => v.main !== mi);
-      g.variants.forEach((v) => { if (v.main > mi) v.main--; });
+      g.mains.splice(+b.dataset.mainDel, 1);
       renderImages();
     }));
-    $$('[data-variant-del]').forEach((b) => b.addEventListener('click', () => {
-      g.variants.splice(+b.dataset.variantDel, 1);
-      renderImages();
-    }));
-    $$('[data-variant-color]').forEach((s) => s.addEventListener('change', () => {
-      g.variants[+s.dataset.variantColor].color = s.value;
-    }));
-    // demote a main photo to a color variant of the row above it
     $$('[data-main-color]').forEach((s) => s.addEventListener('change', () => {
-      const mi = +s.dataset.mainColor;
-      const color = s.value;
-      if (!color) return;
-      if (g.mains.length === 1) { toast('Keep at least one main photo'); renderImages(); return; }
-      const url = g.mains.splice(mi, 1)[0];
-      const home = Math.max(0, mi - 1); // attaches to the previous main row
-      g.variants.forEach((v) => {
-        if (v.main === mi) v.main = home;      // its own variants move with it
-        else if (v.main > mi) v.main--;        // later rows shift up
-      });
-      g.variants.push({ url, color, main: home });
-      renderImages();
+      g.mains[+s.dataset.mainColor].color = s.value; // stays a main photo
+      renderImages(); // re-render so this color drops out of the other dropdowns
     }));
-  }
-
-  function pickFiles(target) {
-    state.uploadTarget = target;
-    $('[data-image-input]').click();
+    // drag by the handle only, so the color dropdowns stay clickable
+    $$('.adm-drag').forEach((h) => {
+      const row = h.closest('.adm-imgrow');
+      h.addEventListener('dragstart', (e) => {
+        state.dragFrom = +row.dataset.row;
+        e.dataTransfer.effectAllowed = 'move';
+        row.classList.add('is-dragging');
+      });
+      h.addEventListener('dragend', () => { row.classList.remove('is-dragging'); state.dragFrom = null; });
+    });
+    $$('.adm-imgrow').forEach((row) => {
+      row.addEventListener('dragover', (e) => { e.preventDefault(); row.classList.add('is-drop'); });
+      row.addEventListener('dragleave', () => row.classList.remove('is-drop'));
+      row.addEventListener('drop', (e) => {
+        e.preventDefault();
+        row.classList.remove('is-drop');
+        const to = +row.dataset.row, from = state.dragFrom;
+        if (from === null || from === to) return;
+        const [m] = g.mains.splice(from, 1);
+        g.mains.splice(to, 0, m);
+        renderImages();
+      });
+    });
   }
 
   $('[data-image-input]').addEventListener('change', async (e) => {
     const files = [...e.target.files];
     e.target.value = '';
-    const target = state.uploadTarget || { type: 'main' };
-    state.uploadTarget = null;
     if (!files.length) return;
     const status = $('[data-upload-status]');
     for (let i = 0; i < files.length; i++) {
@@ -347,8 +330,7 @@
       const { error } = await sb.storage.from('product-images').upload(path, file, { cacheControl: '31536000' });
       if (error) { toast(`Upload failed: ${error.message}`); continue; }
       const { data } = sb.storage.from('product-images').getPublicUrl(path);
-      if (target.type === 'variant') state.gallery.variants.push({ url: data.publicUrl, color: '', main: target.main });
-      else state.gallery.mains.push(data.publicUrl);
+      state.gallery.mains.push({ url: data.publicUrl, color: '' }); // color assigned by position on render
       renderImages();
     }
     status.textContent = '';
@@ -369,11 +351,14 @@
     if (!colors.length) return editorError('Add at least one color (with a name).');
     if (!sizes.length) return editorError('Add at least one size.');
     const g = state.gallery;
-    if (!g.mains.length) return editorError('Upload at least one main image.');
-    if (g.variants.some((v) => !v.color)) return editorError('Pick a color for every color-variant image (or remove it).');
     const known = colors.map((c) => c.name);
-    const orphan = g.variants.find((v) => !known.includes(v.color));
-    if (orphan) return editorError(`Variant image uses color "${orphan.color}" which is not in this product's colors.`);
+    if (!g.mains.length) return editorError('Upload at least one image.');
+    if (g.mains.some((m) => !m.color)) return editorError('Pick a color for every image.');
+    const orphan = g.mains.find((m) => !known.includes(m.color));
+    if (orphan) return editorError(`An image uses color "${orphan.color}" which isn't in this product's colors.`);
+    const seen = new Set();
+    const dup = g.mains.find((m) => seen.has(m.color) || (seen.add(m.color), false));
+    if (dup) return editorError(`Two images share the color "${dup.color}". Each color can be used by one image only.`);
 
     const row = {
       name,
@@ -386,8 +371,9 @@
       description: form.description.value.trim(),
       sizes,
       colors,
-      images: [...g.mains, ...g.variants.map((v) => v.url)],
-      image_colors: [...g.mains.map(() => null), ...g.variants.map((v) => ({ color: v.color, main: v.main }))],
+      images: g.mains.map((m) => m.url),
+      // one photo per color; each stores its chosen color: image_colors[i] = { color }
+      image_colors: g.mains.map((m) => ({ color: m.color })),
       active: form.active.checked,
       sold_out: form.sold_out.checked,
       position: parseInt(form.position.value, 10) || 0,
@@ -400,14 +386,10 @@
       : sb.from('products').insert(r).select().single();
     let { data, error } = await save(row);
     if (error && /image_colors/i.test(error.message)) {
-      // DB migration schema4-image-colors.sql not run yet.
-      if (g.variants.length) {
-        // Never silently flatten color variants into main photos — block instead.
-        btn.disabled = false; btn.textContent = 'Save Product';
-        return editorError('Color images need a one-time database update: run supabase/schema4-image-colors.sql in the Supabase SQL Editor, then save again.');
-      }
-      const { image_colors, ...rest } = row; // no variants -> tags are all null, safe to drop
-      ({ data, error } = await save(rest));
+      // DB migration schema4-image-colors.sql not run yet. Every image now
+      // carries a color, so we can't save without the column — block clearly.
+      btn.disabled = false; btn.textContent = 'Save Product';
+      return editorError('Image colors need a one-time database update: run supabase/schema4-image-colors.sql in the Supabase SQL Editor, then save again.');
     }
     btn.disabled = false; btn.textContent = 'Save Product';
     if (error) return editorError('Save failed: ' + error.message);

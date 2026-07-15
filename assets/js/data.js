@@ -36,32 +36,18 @@
   function fromRow(row) {
     const fit = row.fit || '';
     const dept = row.dept || 'MEN';
-    // image_colors is parallel to images. Entry per image:
-    //   null/''            -> main photo (shown by default)
-    //   {color, main}      -> variant of mains[main], shown when color selected
-    //   "Black" (legacy)   -> variant paired by order within its color
+    const colors = Array.isArray(row.colors) && row.colors.length ? row.colors : [{ name: 'Default', hex: '#1a1a1a' }];
+    // One photo per color, paired by position. image_colors is parallel to
+    // images; entry per image is { color } (or a legacy "Black" string). When
+    // missing, the color falls back to the color at the same index — so the
+    // gallery order lines up with the swatch order.
     const allImages = Array.isArray(row.images) && row.images.length ? row.images : [''];
     const ic = Array.isArray(row.image_colors) ? row.image_colors : [];
-    const norm = (i) => {
+    const imageColors = allImages.map((_, i) => {
       const t = ic[i];
-      if (typeof t === 'string' && t.trim()) return { color: t.trim(), main: null };
-      if (t && typeof t === 'object' && t.color) return { color: String(t.color), main: Number.isInteger(t.main) ? t.main : null };
-      return null;
-    };
-    const mainImages = allImages.filter((_, i) => !norm(i));
-    const variantMap = {}; // color -> { mainIndex: url }
-    const legacySeq = {};
-    allImages.forEach((src, i) => {
-      const v = norm(i);
-      if (!v) return;
-      const m = v.main !== null ? v.main : (legacySeq[v.color] = (legacySeq[v.color] || 0) + 1) - 1;
-      (variantMap[v.color] = variantMap[v.color] || {})[m] = src;
-    });
-    // Full gallery per color: the variant where one exists, else the original —
-    // so a color with partial variants still shows every photo position.
-    const imagesByColor = {};
-    Object.keys(variantMap).forEach((c) => {
-      imagesByColor[c] = mainImages.map((src, i) => variantMap[c][i] || src);
+      if (t && typeof t === 'object' && t.color) return String(t.color);
+      if (typeof t === 'string' && t.trim()) return t.trim();
+      return (colors[i] && colors[i].name) || null; // positional fallback
     });
     return {
       id: row.id,
@@ -73,14 +59,13 @@
       price: row.price,
       compareAt: row.compare_at || null,
       discount: row.compare_at ? Math.round((1 - row.price / row.compare_at) * 100) : 0,
-      colors: Array.isArray(row.colors) && row.colors.length ? row.colors : [{ name: 'Default', hex: '#1a1a1a' }],
+      colors,
       sizes: Array.isArray(row.sizes) && row.sizes.length ? row.sizes : ['One Size'],
       badge: row.badge || null,
       soldOut: !!row.sold_out,
       description: row.description || '',
-      images: mainImages.length ? mainImages : allImages, // main photos (cards, cart, default gallery)
-      allImages,
-      imagesByColor, // { "Black": [urls...] } — gallery swaps to these on color select
+      images: allImages,       // full gallery — one photo per color, in swatch order
+      imageColors,             // parallel: imageColors[i] = color name of images[i]
     };
   }
 
